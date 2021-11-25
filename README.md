@@ -1,2 +1,2 @@
 # PyGame_project
-Geometry Dash 
+Platformer
