@@ -52,10 +52,10 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>900</x>
-      <y>170</y>
+      <x>910</x>
+      <y>190</y>
       <width>421</width>
-      <height>391</height>
+      <height>351</height>
      </rect>
     </property>
     <property name="text">
@@ -100,7 +100,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>1000</x>
+      <x>1010</x>
       <y>530</y>
       <width>91</width>
       <height>31</height>
@@ -406,6 +406,18 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#ffffff;&quot;&gt;META&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
+   <zorder>label</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>label_5</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>pushButton_2</zorder>
+   <zorder>pushButton_3</zorder>
+   <zorder>label_7</zorder>
+   <zorder>label_8</zorder>
+   <zorder>label_9</zorder>
+   <zorder>label_6</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
