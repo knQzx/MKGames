@@ -1,6 +1,7 @@
 import msgpack
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QScrollArea, QGridLayout, QWidgetItem, QPushButton, QButtonGroup
+import os
 
 
 class Window(QWidget):
@@ -10,7 +11,7 @@ class Window(QWidget):
         self.initUi()
 
     def download_data(self):
-        with open("data.msgpack", "rb") as data_file:
+        with open("level.msgpack", "rb") as data_file:
             self.data = msgpack.unpackb(data_file.read())
 
     def initUi(self):
@@ -34,17 +35,18 @@ class Window(QWidget):
                 self.layout.addItem(QWidgetItem(button), row, col)
 
     def update_button(self, button):
-        state_list = ['.', '-', '|', '#', 'F', 'D']
+        state_list = ['.', '-', '|', 'F', 'D']
         cur_state = state_list.index(button.text())
         button.setText(state_list[(cur_state + 1) % len(state_list)])
         row, col, _, _ = self.layout.getItemPosition(self.layout.indexOf(button))
         self.world[row][col] = button.text()
-        with open("data.msgpack", "wb") as outfile:
+        with open("level.msgpack", "wb") as outfile:
             packed = msgpack.packb(self.data)
             outfile.write(packed)
 
 
 if __name__ == '__main__':
+    os.chdir(f'../../games/S2W Adventure/levels/{input("Level name: ")}')
     app = QApplication(sys.argv)
     window = QScrollArea()
     window.setWidget(Window())
