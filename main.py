@@ -56,10 +56,10 @@ class MyWidget(QMainWindow):
         """
         buttonsettings = '''
         QPushButton {
-            border: 2px solid #876020;
+            border: 2px solid #0a0a0a;
         }
         QPushButton:hover:pressed {
-            background-color: #967117;
+            background-color: #0a0a0a;
         }
         '''
         self.pushButton.setStyleSheet(buttonsettings)
