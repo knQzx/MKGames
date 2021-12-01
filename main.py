@@ -62,6 +62,7 @@ class MyWidget(QMainWindow):
             background-color: #0a0a0a;
         }
         '''
+
         self.pushButton.setStyleSheet(buttonsettings)
         self.pushButton_2.setStyleSheet(buttonsettings)
         self.pushButton_3.setStyleSheet(buttonsettings)
