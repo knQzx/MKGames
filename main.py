@@ -1,6 +1,6 @@
-import sys
-import sqlite3
 import os
+import sqlite3
+import sys
 
 from PyQt5 import uic  # Импортируем uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
@@ -51,6 +51,20 @@ class MyWidget(QMainWindow):
                 self.pushButton_3.setText('PLAY')
             else:
                 self.pushButton_3.setText('BUY (1 coin)')
+        """
+        change defolt button settings
+        """
+        buttonsettings = '''
+        QPushButton {
+            border: 2px solid #876020;
+        }
+        QPushButton:hover:pressed {
+            background-color: #967117;
+        }
+        '''
+        self.pushButton.setStyleSheet(buttonsettings)
+        self.pushButton_2.setStyleSheet(buttonsettings)
+        self.pushButton_3.setStyleSheet(buttonsettings)
 
     def run_s2adv(self):
         conn = sqlite3.connect("database.sqlite")
