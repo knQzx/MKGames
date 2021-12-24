@@ -16,7 +16,7 @@ def load_level(name):
 def load_image(name, colorkey=None):
     filename = os.path.join('data', 'images', name)
     if not os.path.isfile(filename):
-        print(f"Файл с изображением '{filename}' не найден")
+        print(f"File with image '{filename}' not found")
         sys.exit()
     image = pygame.image.load(filename)
     if colorkey is not None:
