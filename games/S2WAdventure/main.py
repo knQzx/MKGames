@@ -11,7 +11,6 @@ class Setup:
         self.size = self.width, self.height = 0, 0
         self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         self.size = self.width, self.height = pygame.display.get_window_size()
-        print(self.size)
         pygame.display.set_caption('S2WAdventure')
 
         self.clock = pygame.time.Clock()
