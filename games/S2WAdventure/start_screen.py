@@ -1,5 +1,6 @@
 import pygame
 import json
+import operations
 
 
 class StartScreen:
@@ -38,8 +39,18 @@ class StartScreen:
                                 level.rect = level.rect.move(0, move * 3)
             setup.screen.fill(pygame.Color('orange'))
             self.levels_group.draw(setup.screen)
+            self.draw_title(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
+
+    def draw_title(self, screen):
+        image = operations.load_image('S2WAdventure title.png')
+        rect = image.get_rect()
+        rect.x, rect.y = 10, 10
+        screen.blit(
+            image,
+            rect
+        )
 
     def add_levels(self):
         for num, level_name in enumerate(self.levels['level_names']):
