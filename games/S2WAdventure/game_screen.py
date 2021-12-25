@@ -24,6 +24,10 @@ class Camera:
 
 
 class GameScreen:
+    def __init__(self, name):
+        self.name = name
+        print(name)
+
     def start(self, setup):
         while True:
             setup.screen.fill(pygame.Color('green'))
