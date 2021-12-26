@@ -1,3 +1,5 @@
+import os
+
 import pygame
 import json
 import operations
@@ -8,7 +10,8 @@ class StartScreen:
         self.setup = setup
 
         self.levels_group = pygame.sprite.Group()
-
+        print(os.getcwd())
+        os.chdir('games/S2WAdventure')
         with open('data/levels/levels.json', 'r') as read_file:  # Import levels
             self.levels = json.load(read_file)
         self.add_levels()
@@ -119,3 +122,4 @@ class Level(pygame.sprite.Sprite):
             pygame.Color('green'),
             (self.size[0] // 2 - bar_size[0] // 2, self.size[1] - bar_size[1] * 2, *bar_size)
         )
+
