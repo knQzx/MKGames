@@ -11,11 +11,11 @@ class Camera:
 
     def apply(self, obj):
         obj.rect.x += self.dx
-        obj.rect.y += self.dy
 
-    def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2) - CELL_SIZE // 2
-        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2) - CELL_SIZE // 2
+    def update(self, target, game_screen):
+        self.dx = -(target.rect.x + target.rect.w // 2 - game_screen.setup.width // 2)
+        target.rect.x += self.dx
+        target.x += self.dx
 
     def draw_group(self, group, screen):
         draw_group = pygame.sprite.Group()
@@ -27,8 +27,97 @@ class Camera:
 
 
 class Hero(pygame.sprite.Sprite):
-    def __init__(self):
-        pass
+    def __init__(self, x, y, game_screen):
+        super().__init__(game_screen.hero_group)
+        self.game_screen = game_screen
+
+        self.frames = []
+        self.cut_sheet(operations.load_image('hero.png'), 2, 1)
+
+        self.current_speed = 0
+        self.speeds = [3 * self.game_screen.tile_size, 4 * self.game_screen.tile_size]
+        self.speed = self.speeds[self.current_speed]
+
+        self.dx, self.dy = self.speed, 0
+        self.air_time = 0
+        self.fix_up_count = 0
+        self.distance_from_last_block = 0
+
+        self.image = self.frames[self.current_speed]
+        self.image = pygame.transform.scale(self.image, (self.game_screen.tile_size, self.game_screen.tile_size))
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.rect.move(x * game_screen.tile_size,
+                                   y * game_screen.tile_size + self.game_screen.tile_size // 2)
+        self.x, self.y = self.rect.x, self.rect.y
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def change_speed(self):
+        self.current_speed = (self.current_speed + 1) % len(self.speeds)
+        self.image = self.frames[self.current_speed]
+        self.image = pygame.transform.scale(self.image, (self.game_screen.tile_size, self.game_screen.tile_size))
+        self.speed = self.speeds[self.current_speed]
+
+    def update(self):
+        prev_rect = self.rect.copy()
+
+        self.dy += 30 * self.speed * self.air_time ** 2 / 9.8
+        self.dx = self.speed
+        self.x += self.dx / self.game_screen.setup.FPS
+        self.distance_from_last_block += self.dx / self.game_screen.setup.FPS
+        if self.distance_from_last_block // self.game_screen.tile_size != 0:
+            self.fix_up_count = 0
+            self.distance_from_last_block = 0
+        self.y += self.dy / self.game_screen.setup.FPS
+        self.dy -= 30 * self.speed * self.air_time ** 2 / 9.8
+        self.air_time += 1 / self.game_screen.setup.FPS
+
+        self.rect.x = int(self.x)
+        self.rect.y = int(self.y)
+
+        for tile in self.game_screen.tiles_group:
+            if tile.world == self.game_screen.current_world and pygame.sprite.collide_mask(self, tile):
+                if tile in self.game_screen.death_tiles_group:
+                    self.game_screen.finish_game(False)
+                if tile in self.game_screen.finish_tiles_group:
+                    self.game_screen.finish_game(True)
+                self.dy = 0
+                self.dx = 0
+                self.air_time = 0
+                cur_rect = self.rect.copy()
+
+                test_rect = prev_rect
+                test_rect.y = self.rect.y
+                self.rect = test_rect.copy()
+                if pygame.sprite.collide_mask(self, tile):
+                    self.y = prev_rect.y
+                    self.rect.y = int(self.y)
+                self.rect = cur_rect.copy()
+
+                test_rect = prev_rect
+                test_rect.x = self.rect.x
+                test_rect.y -= self.game_screen.tile_size // 4
+                self.rect = test_rect.copy()
+                if pygame.sprite.collide_mask(self, tile):
+                    self.x = prev_rect.x
+                    self.game_screen.finish_game(False)
+                self.rect = cur_rect.copy()
+
+                while pygame.sprite.collide_mask(self, tile) and self.fix_up_count <= self.game_screen.tile_size // 4:
+                    self.rect.y -= 1
+                    self.y -= 1
+                    self.fix_up_count += 1
+
+        if self.rect.bottom < 0 or self.rect.top > self.game_screen.setup.height or \
+                self.rect.left < 0 or self.rect.right > self.game_screen.setup.width:
+            self.game_screen.finish_game(False)
 
 
 class GameScreen:
@@ -37,30 +126,61 @@ class GameScreen:
 
     def start(self, setup):
         self.setup = setup
+        self.load_level()
+        self.tile_size = self.setup.height // 12
 
         camera = Camera()
+        self.hero_group = pygame.sprite.Group()
+        self.hero = Hero(0, self.height - 2, self)
         self.tiles_group = pygame.sprite.Group()
         self.default_tiles_group = pygame.sprite.Group()
         self.death_tiles_group = pygame.sprite.Group()
         self.finish_tiles_group = pygame.sprite.Group()
 
-        self.load_level()
         background = operations.load_image('forest.jpg')
         self.set_tiles(0)
         self.set_tiles(1)
         self.change_world_to(0)
+        self.running = True
         while True:
-            setup.screen.fill(pygame.Color('green'))
+            space_clicked = False
             for event in pygame.event.get():
+                if not self.running:
+                    return self.setup.StartScreen()
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_e:
-                        self.change_world_to(0 if self.current_world == 1 else 1)
+                    if event.key == pygame.K_e and self.running:
+                        collide = False
+                        for tile in self.tiles_group:
+                            if tile.world != self.current_world and pygame.sprite.collide_mask(self.hero, tile):
+                                collide = True
+                        if not collide:
+                            self.change_world_to(0 if self.current_world == 1 else 1)
+                    if event.key == pygame.K_SPACE and self.running:
+                        if space_clicked:
+                            continue
+                        self.hero.rect.y += 1
+                        self.hero.y += 1
+                        for tile in self.tiles_group:
+                            if tile.world == self.current_world and pygame.sprite.collide_mask(self.hero, tile):
+                                self.hero.dy -= 6.5 * self.tile_size
+                                break
+                        self.hero.rect.y += 1
+                        self.hero.y += 1
+                        space_clicked = True
+            if self.running:
+                self.hero.update()
+                camera.update(self.hero, self)
+
+                for tile in self.tiles_group:
+                    camera.apply(tile)
+
             operations.draw_background(self.setup.screen, background)
             camera.draw_group(self.tiles_group, self.setup.screen)
+            self.hero_group.draw(self.setup.screen)
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
+            setup.clock.tick(self.setup.FPS)
 
     def load_level(self):
         with open(f'data/levels/{self.name}/level.json') as read_file:
@@ -68,7 +188,6 @@ class GameScreen:
         self.map = pytmx.load_pygame(f'data/levels/{self.name}/level.tmx')
         self.height = self.map.height
         self.width = self.map.width
-        self.tile_size = self.setup.height // 12
         self.default_tiles = [1, 2]
         self.death_tiles = [3, 4]
         self.finish_tile = 5
@@ -82,6 +201,7 @@ class GameScreen:
                     continue
                 tile.image = image.copy()
                 tile.image = pygame.transform.scale(image, (self.tile_size, self.tile_size))
+                tile.mask = pygame.mask.from_surface(tile.image)
                 tile.default_image = tile.image.copy()
                 tile.rect = tile.image.get_rect()
                 tile.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
@@ -105,3 +225,7 @@ class GameScreen:
 
     def get_tile_id(self, position, layer):
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
+
+    def finish_game(self, win):
+        print(win)
+        self.running = False
