@@ -32,7 +32,7 @@ class Hero(pygame.sprite.Sprite):
         self.game_screen = game_screen
 
         self.frames = []
-        self.cut_sheet(operations.load_image('hero.png'), 2, 1)
+        self.cut_sheet(operations.load_image('hero.png'), 2, 2)
 
         self.current_speed = 0
         self.speeds = [3 * self.game_screen.tile_size, 4 * self.game_screen.tile_size]
@@ -43,7 +43,7 @@ class Hero(pygame.sprite.Sprite):
         self.fix_up_count = 0
         self.distance_from_last_block = 0
 
-        self.image = self.frames[self.current_speed]
+        self.image = self.frames[self.game_screen.current_world][self.current_speed]
         self.image = pygame.transform.scale(self.image, (self.game_screen.tile_size, self.game_screen.tile_size))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.rect.move(x * game_screen.tile_size,
@@ -54,14 +54,15 @@ class Hero(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
                                 sheet.get_height() // rows)
         for j in range(rows):
+            self.frames.append([])
             for i in range(columns):
                 frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(sheet.subsurface(pygame.Rect(
+                self.frames[-1].append(sheet.subsurface(pygame.Rect(
                     frame_location, self.rect.size)))
 
     def change_speed(self):
         self.current_speed = (self.current_speed + 1) % len(self.speeds)
-        self.image = self.frames[self.current_speed]
+        self.image = self.frames[self.game_screen.current_world][self.current_speed]
         self.image = pygame.transform.scale(self.image, (self.game_screen.tile_size, self.game_screen.tile_size))
         self.speed = self.speeds[self.current_speed]
 
@@ -129,18 +130,19 @@ class GameScreen:
         self.load_level()
         self.tile_size = self.setup.height // 12
 
-        camera = Camera()
-        self.hero_group = pygame.sprite.Group()
-        self.hero = Hero(0, self.height - 2, self)
         self.tiles_group = pygame.sprite.Group()
         self.default_tiles_group = pygame.sprite.Group()
         self.death_tiles_group = pygame.sprite.Group()
         self.finish_tiles_group = pygame.sprite.Group()
-
-        background = operations.load_image('forest.jpg')
         self.set_tiles(0)
         self.set_tiles(1)
         self.change_world_to(0)
+
+        camera = Camera()
+        self.hero_group = pygame.sprite.Group()
+        self.hero = Hero(0, self.height - 2, self)
+
+        background = operations.load_image('forest.jpg')
         self.running = True
         while True:
             space_clicked = False
@@ -157,6 +159,8 @@ class GameScreen:
                                 collide = True
                         if not collide:
                             self.change_world_to(0 if self.current_world == 1 else 1)
+                            self.hero.image = self.hero.frames[self.current_world][self.hero.current_speed]
+                            self.hero.image = pygame.transform.scale(self.hero.image, (self.tile_size, self.tile_size))
                     if event.key == pygame.K_SPACE and self.running:
                         if space_clicked:
                             continue
@@ -169,6 +173,11 @@ class GameScreen:
                         self.hero.rect.y += 1
                         self.hero.y += 1
                         space_clicked = True
+                    if event.key == pygame.K_w and self.running:
+                        self.hero.change_speed()
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_w and self.running:
+                        self.hero.change_speed()
             if self.running:
                 self.hero.update()
                 camera.update(self.hero, self)
