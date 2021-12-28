@@ -90,6 +90,7 @@ class Hero(pygame.sprite.Sprite):
                 if tile in self.game_screen.death_tiles_group:
                     self.game_screen.finish_game()
                 if tile in self.game_screen.finish_tiles_group:
+                    self.distance = self.game_screen.width * self.game_screen.tile_size
                     self.game_screen.finish_game()
                 self.dy = 0
                 self.dx = 0
