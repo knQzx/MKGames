@@ -100,7 +100,7 @@ class Level(pygame.sprite.Sprite):
         level_name_rect.x, level_name_rect.y = self.size[0] // 2 - level_name_rect.width // 2, 10
         self.image.blit(string, level_name_rect)
 
-        font = pygame.font.Font(None, 30)  # Draw level name
+        font = pygame.font.Font(None, 30)  # Draw score
         string = font.render(str(self.score) + '%', 1, pygame.Color('blue'))
         level_name_rect = string.get_rect()
         level_name_rect.x, level_name_rect.y = self.size[0] // 2 - level_name_rect.width // 2, self.size[1] // 2

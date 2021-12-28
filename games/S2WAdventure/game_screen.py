@@ -42,6 +42,7 @@ class Hero(pygame.sprite.Sprite):
         self.air_time = 0
         self.fix_up_count = 0
         self.distance_from_last_block = 0
+        self.distance = 0
 
         self.image = self.frames[self.game_screen.current_world][self.current_speed]
         self.image = pygame.transform.scale(self.image, (self.game_screen.tile_size, self.game_screen.tile_size))
@@ -73,6 +74,7 @@ class Hero(pygame.sprite.Sprite):
         self.dx = self.speed
         self.x += self.dx / self.game_screen.setup.FPS
         self.distance_from_last_block += self.dx / self.game_screen.setup.FPS
+        self.distance += self.dx / self.game_screen.setup.FPS
         if self.distance_from_last_block // self.game_screen.tile_size != 0:
             self.fix_up_count = 0
             self.distance_from_last_block = 0
@@ -86,9 +88,9 @@ class Hero(pygame.sprite.Sprite):
         for tile in self.game_screen.tiles_group:
             if tile.world == self.game_screen.current_world and pygame.sprite.collide_mask(self, tile):
                 if tile in self.game_screen.death_tiles_group:
-                    self.game_screen.finish_game(False)
+                    self.game_screen.finish_game()
                 if tile in self.game_screen.finish_tiles_group:
-                    self.game_screen.finish_game(True)
+                    self.game_screen.finish_game()
                 self.dy = 0
                 self.dx = 0
                 self.air_time = 0
@@ -108,7 +110,7 @@ class Hero(pygame.sprite.Sprite):
                 self.rect = test_rect.copy()
                 if pygame.sprite.collide_mask(self, tile):
                     self.x = prev_rect.x
-                    self.game_screen.finish_game(False)
+                    self.game_screen.finish_game()
                 self.rect = cur_rect.copy()
 
                 while pygame.sprite.collide_mask(self, tile) and self.fix_up_count <= self.game_screen.tile_size // 4:
@@ -118,7 +120,93 @@ class Hero(pygame.sprite.Sprite):
 
         if self.rect.bottom < 0 or self.rect.top > self.game_screen.setup.height or \
                 self.rect.left < 0 or self.rect.right > self.game_screen.setup.width:
-            self.game_screen.finish_game(False)
+            self.game_screen.finish_game()
+
+
+class FinishTitle(pygame.sprite.Sprite):
+    def __init__(self, game_screen):
+        super().__init__(game_screen.finish_title_group)
+        self.game_screen = game_screen
+        self.score = int(self.game_screen.hero.distance / self.game_screen.tile_size / self.game_screen.width * 100)
+
+        self.image = pygame.Surface(self.game_screen.setup.size, pygame.SRCALPHA, 32)
+        self.size = self.game_screen.setup.size
+        self.draw()
+        self.rect = self.image.get_rect()
+
+        self.rect.x = -self.game_screen.setup.width
+        self.x = self.rect.x
+
+    def draw(self):
+        pygame.draw.rect(  # Draw shell
+            self.image,
+            pygame.Color('blue'),
+            (0, 0, *self.size),
+            10, 10
+        )
+
+        font = pygame.font.Font(None, 30)  # Draw score
+        string = font.render(str(self.score) + '%', 1, pygame.Color('blue'))
+        level_name_rect = string.get_rect()
+        level_name_rect.x, level_name_rect.y = self.size[0] // 2 - level_name_rect.width // 2, self.size[1] // 2
+        self.image.blit(string, level_name_rect)
+
+        bar_size = (self.size[0] - 40), 10  # Draw background of progress bar
+        pygame.draw.rect(
+            self.image,
+            pygame.Color('blue'),
+            (self.size[0] // 2 - bar_size[0] // 2, self.size[1] // 2 + bar_size[1] * 2, *bar_size)
+        )
+
+        bar_size = (self.size[0] - 10) * self.score // 100, 10  # Draw progress bar
+        pygame.draw.rect(
+            self.image,
+            pygame.Color('green'),
+            (self.size[0] // 2 - bar_size[0] // 2, self.size[1] // 2 + bar_size[1] * 2, *bar_size)
+        )
+
+        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'), (100, 100))  # Place play again button
+        new_x = int(self.size[0] / 2 + play_again_image.get_rect().left / 2 * 1.5)
+        new_y = self.size[1] // 2 + play_again_image.get_rect().height
+        self.play_again_button = Button(
+            play_again_image,
+            self,
+            (new_x, new_y),
+            self.game_screen.finish_title_group
+        )
+
+        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'), (100, 100))  # Place select level button
+        new_x = int(self.size[0] / 2 - select_level_image.get_rect().right * 1.5)
+        new_y = self.size[1] // 2 + select_level_image.get_rect().height
+        self.select_level_button = Button(
+            select_level_image,
+            self,
+            (new_x, new_y),
+            self.game_screen.finish_title_group
+        )
+
+    def check_click(self, pos):
+        if self.select_level_button.rect.collidepoint(*pos):
+            self.game_screen.out = self.game_screen.setup.StartScreen()
+        if self.play_again_button.rect.collidepoint(*pos):
+            self.game_screen.out = self.game_screen.setup.GameScreen(self.game_screen.name)
+
+    def update(self):
+        if self.x < 0:
+            self.x += 1000 / self.game_screen.setup.FPS
+            self.rect.x = min(0, int(self.x))
+
+
+class Button(pygame.sprite.Sprite):
+    def __init__(self, image, target, target_pos, group):
+        super().__init__(group)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.target = target
+        self.target_pos = target_pos
+
+    def update(self):
+        self.rect.x, self.rect.y = self.target.rect.x + self.target_pos[0], self.target.rect.y + self.target_pos[1]
 
 
 class GameScreen:
@@ -142,13 +230,14 @@ class GameScreen:
         self.hero_group = pygame.sprite.Group()
         self.hero = Hero(0, self.height - 2, self)
 
-        background = operations.load_image('forest.jpg')
+        background = operations.load_image('Forest.jpg')
         self.running = True
         while True:
             space_clicked = False
             for event in pygame.event.get():
                 if not self.running:
-                    return self.setup.StartScreen()
+                    if self.out is not None:
+                        return self.out
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
                 if event.type == pygame.KEYDOWN:
@@ -178,16 +267,21 @@ class GameScreen:
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_w and self.running:
                         self.hero.change_speed()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if not self.running:
+                        self.finish_title.check_click(event.pos)
             if self.running:
                 self.hero.update()
                 camera.update(self.hero, self)
-
                 for tile in self.tiles_group:
                     camera.apply(tile)
 
             operations.draw_background(self.setup.screen, background)
             camera.draw_group(self.tiles_group, self.setup.screen)
             self.hero_group.draw(self.setup.screen)
+            if not self.running:
+                self.finish_title_group.update()
+                self.finish_title_group.draw(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(self.setup.FPS)
 
@@ -235,6 +329,16 @@ class GameScreen:
     def get_tile_id(self, position, layer):
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
 
-    def finish_game(self, win):
-        print(win)
+    def finish_game(self):
+        if not self.running:
+            return
         self.running = False
+        self.out = None
+        self.finish_title_group = pygame.sprite.Group()
+        self.finish_title = FinishTitle(self)
+
+        with open(f'data/levels/{self.name}/level.json') as read_file:
+            level_data = json.load(read_file)
+        level_data['score'] = max(level_data['score'], int(self.hero.distance / self.tile_size / self.width * 100))
+        with open(f'data/levels/{self.name}/level.json', 'w') as write_file:
+            json.dump(level_data, write_file)
