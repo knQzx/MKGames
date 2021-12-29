@@ -112,7 +112,9 @@ class MyWidget(QMainWindow):
                 msg.exec_()
             elif 'S2ADV' in s[4]:
                 ex.close()
-                os.system('python3 games/S2WAdventure/main.py')
+                os.chdir('games/S2WAdventure')
+                os.system('python3 main.py')
+                os.chdir('../../')
                 ex.show()
 
     def run_flappy_bird(self):
