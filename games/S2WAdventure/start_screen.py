@@ -6,6 +6,7 @@ import operations
 class StartScreen:
     def start(self, setup):
         self.setup = setup
+        pygame.mixer.music.stop()
 
         self.levels_group = pygame.sprite.Group()
         with open('data/levels/levels.json', 'r') as read_file:  # Import levels
