@@ -39,7 +39,7 @@ if __name__ == '__main__':
     sxr = 30
     screen = pygame.display.set_mode(size)
     # обещание великого правителя
-    Music().rulers_promise('Обещание выдать миску риса.mp3')
+    #Music().rulers_promise('Обещание выдать миску риса.mp3')
     # музыка на фоне
     Music().background_music('Музыка на фон.mp3')
     #
@@ -85,11 +85,11 @@ if __name__ == '__main__':
             if walls:  # --> если не пустой
                 for el1 in walls:  # проходимся по элементам т.к. может быть не одна стена
                     el1 *= 10  # подгоняем под размеры
-                    pygame.draw.line(screen, 'red', (el1, k), (el1, k + 20))
+                    pygame.draw.line(screen, (254, 0, 0, 255), (el1, k), (el1, k + 20))
             if floar:  # --> если не пустой
                 for el1 in floar:  # проходимся по элементам т.к. может быть не один пол
                     el1 *= 10  # подгоняем под размеры
-                    pygame.draw.line(screen, 'red', (el1 - 10, k), (el1 + 10, k))
+                    pygame.draw.line(screen, (254, 0, 0, 255), (el1 - 10, k), (el1 + 10, k))
             if rise_x_y:  # рисуем зеленый квадрат(рис)
                 for y in rise_x_y:
                     for el in rise_x_y[y]:
@@ -122,5 +122,28 @@ if __name__ == '__main__':
                         rise_result += 1
                         textsurface = myfont.render(f'Количество риса: {rise_result}', False, 'blue')
                         screen.blit(textsurface, (600, 0))
+        pygame.display.flip()
+        sp = []
+        try:
+            color = screen.get_at((int(x_pos), int(y_pos)))
+            if color == (254, 0, 0, 255) or color == (0, 254, 0, 0):
+                sp.append('Минус один рис')
+            color = screen.get_at((int(x_pos + 10), int(y_pos)))
+            if color == (254, 0, 0, 255) or color == (0, 254, 0, 0):
+                sp.append('Минус один рис')
+            color = screen.get_at((int(x_pos), int(y_pos + 10)))
+            if color == (254, 0, 0, 255) or color == (0, 254, 0, 0):
+                sp.append('Минус один рис')
+            color = screen.get_at((int(x_pos + 20), int(y_pos + 10)))
+            if color == (254, 0, 0, 255) or color == (0, 254, 0, 0):
+                sp.append('Минус один рис')
+            color = screen.get_at((int(x_pos), int(y_pos + 20)))
+            if color == (254, 0, 0, 255) or color == (0, 254, 0, 0):
+                sp.append('Минус один рис')
+            if sp != []:
+                print('Плохо')
+                rise_result -= 1
+        except IndexError:
+            print('Проигралaaaaaaaaaaaaaaaaaaaa')
         pygame.display.flip()
     pygame.quit()
