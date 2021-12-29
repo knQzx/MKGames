@@ -296,6 +296,9 @@ class GameScreen:
         self.death_tiles = [3, 4]
         self.finish_tile = 5
 
+        pygame.mixer.music.load(f'data/music/{self.level["music"]}')
+        pygame.mixer.music.play(-1)
+
     def set_tiles(self, world):
         for y in range(self.height):
             for x in range(self.width):
