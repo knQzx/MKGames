@@ -39,7 +39,7 @@ if __name__ == '__main__':
     sxr = 30
     screen = pygame.display.set_mode(size)
     # обещание великого правителя
-    #Music().rulers_promise('Обещание выдать миску риса.mp3')
+    Music().rulers_promise('Обещание выдать миску риса.mp3')
     # музыка на фоне
     Music().background_music('Музыка на фон.mp3')
     #
@@ -60,7 +60,6 @@ if __name__ == '__main__':
             x_pos = playeer[0] * 9.6
             y_pos = k - 6
         k += 20
-    print(rise_x_y)
     #
     running = True
     clock = pygame.time.Clock()
