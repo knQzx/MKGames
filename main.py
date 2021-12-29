@@ -162,7 +162,9 @@ class MyWidget(QMainWindow):
                 msg.exec_()
             elif 'Bird' in s[4]:
                 ex.close()
-                os.system('python3 games/FlappyBird/main.py')
+                os.chdir('games/FlappyBird')
+                os.system('python3 main.py')
+                os.chdir('../../')
                 ex.show()
 
     def run_snake(self):
@@ -210,7 +212,9 @@ class MyWidget(QMainWindow):
                 msg.exec_()
             elif 'Snake' in s[4]:
                 ex.close()
-                os.system('python3 games/WarShake/main.py')
+                os.chdir('games/WarShake')
+                os.system('python3 main.py')
+                os.chdir('../../')
                 ex.show()
 
 
