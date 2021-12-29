@@ -70,7 +70,7 @@ class Hero(pygame.sprite.Sprite):
     def update(self):
         prev_rect = self.rect.copy()
 
-        self.dy += 30 * self.speed * self.air_time ** 2 / 9.8
+        self.dy += self.game_screen.tile_size * 0.4 * self.speed * self.air_time ** 2 / 9.8
         self.dx = self.speed
         self.x += self.dx / self.game_screen.setup.FPS
         self.distance_from_last_block += self.dx / self.game_screen.setup.FPS
@@ -79,7 +79,7 @@ class Hero(pygame.sprite.Sprite):
             self.fix_up_count = 0
             self.distance_from_last_block = 0
         self.y += self.dy / self.game_screen.setup.FPS
-        self.dy -= 30 * self.speed * self.air_time ** 2 / 9.8
+        self.dy -= self.game_screen.tile_size * 0.4 * self.speed * self.air_time ** 2 / 9.8
         self.air_time += 1 / self.game_screen.setup.FPS
 
         self.rect.x = int(self.x)
