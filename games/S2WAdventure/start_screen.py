@@ -39,8 +39,21 @@ class StartScreen:
             setup.screen.fill(pygame.Color('orange'))
             self.levels_group.draw(setup.screen)
             self.draw_title(self.setup.screen)
+            self.draw_hint(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
+
+    def draw_hint(self, screen):
+        text = ['Change world: "E"', 'Accelerate: "W"']
+        x = 10
+        y = 500
+        for string in text:
+            y += 60
+            font = pygame.font.Font(None, 50)
+            string = font.render(string, 1, pygame.Color('blue'))
+            string_rect = string.get_rect()
+            string_rect.x, string_rect.y = x, y
+            screen.blit(string, string_rect)
 
     def draw_title(self, screen):
         image = operations.load_image('S2WAdventure title.png')
