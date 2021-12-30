@@ -2,31 +2,31 @@
          q  q
          q  q
          q  q
-   q_____   q
-   q        q
-   q    q___
-   q    q
-   q     __q
-   q r     q
-    ____q  q
-        q  q
-        q  q
-   q____   q
-   q r   r  ____q
-   q            q
-   q    q____q  q
-   q    q    q  q
-    ____     q   ____________q
-             q r          r  q
-              ____________q  q
-                          q  q
-                          q  q
-                          q  q
-       q____________q     q  q
-       q     x      q     q  q
-       q     r      q     q  q
-       q   q________      q  q
-       q   q              q  q
-       q    ______________   q
-       q       r      r      q
-        _____________________
+   q_____   q                    q___q
+   q        q                    q   q
+   q    q___                     q   q        q______q
+   q    q                        q   q        q      q
+   q     __q                     q   q        q      q
+   q r     q              q______     ________       q
+    ____q  q              q                          q
+        q  q              q   r                       ______________________q
+        q  q               _____________q                                   q
+   q____   q                            q                         r         q
+   q r   r  ____q                       q                                   q
+   q            q                       q                    q______________
+   q    q____q  q                       q  r                 q
+   q    q    q  q                        _____________q      q
+    ____     q   ____________q                        q      q
+             q r          r  q                        q      q
+              ____________q  q                        q      q
+                          q  q                        q      q
+                          q  q                        q       _______q
+                          q  q        q_______________               q
+       q____________q     q  q        q                              q
+       q     x      q     q  q        q    r                q________
+       q     r      q     q  q         _______q              _________q
+       q   q________      q  q                q                       q
+       q   q              q  q                q                       q
+       q    ______________    ________________                        q
+       q       r      r                                   r           q
+        ______________________________________________________________
