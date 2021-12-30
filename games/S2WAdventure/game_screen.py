@@ -231,7 +231,7 @@ class GameScreen:
         self.hero_group = pygame.sprite.Group()
         self.hero = Hero(0, self.height - 2, self)
 
-        background = operations.load_image('Forest.jpg')
+        background = operations.load_image(self.level['background'])
         self.running = True
         while True:
             space_clicked = False
