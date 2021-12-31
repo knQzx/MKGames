@@ -1,5 +1,3 @@
-import os
-
 import pygame
 import json
 import operations
@@ -8,10 +6,9 @@ import operations
 class StartScreen:
     def start(self, setup):
         self.setup = setup
+        pygame.mixer.music.stop()
 
         self.levels_group = pygame.sprite.Group()
-        print(os.getcwd())
-        os.chdir('games/S2WAdventure')
         with open('data/levels/levels.json', 'r') as read_file:  # Import levels
             self.levels = json.load(read_file)
         self.add_levels()
@@ -43,8 +40,21 @@ class StartScreen:
             setup.screen.fill(pygame.Color('orange'))
             self.levels_group.draw(setup.screen)
             self.draw_title(self.setup.screen)
+            self.draw_hint(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
+
+    def draw_hint(self, screen):
+        text = ['Change world: "E"', 'Accelerate: "W"']
+        x = 10
+        y = 500
+        for string in text:
+            y += 60
+            font = pygame.font.Font(None, 50)
+            string = font.render(string, 1, pygame.Color('blue'))
+            string_rect = string.get_rect()
+            string_rect.x, string_rect.y = x, y
+            screen.blit(string, string_rect)
 
     def draw_title(self, screen):
         image = operations.load_image('S2WAdventure title.png')
@@ -103,7 +113,7 @@ class Level(pygame.sprite.Sprite):
         level_name_rect.x, level_name_rect.y = self.size[0] // 2 - level_name_rect.width // 2, 10
         self.image.blit(string, level_name_rect)
 
-        font = pygame.font.Font(None, 30)  # Draw level name
+        font = pygame.font.Font(None, 30)  # Draw score
         string = font.render(str(self.score) + '%', 1, pygame.Color('blue'))
         level_name_rect = string.get_rect()
         level_name_rect.x, level_name_rect.y = self.size[0] // 2 - level_name_rect.width // 2, self.size[1] // 2
