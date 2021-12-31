@@ -1,7 +1,6 @@
 import os
 import random
 import re
-import time
 
 import pygame
 
@@ -69,12 +68,12 @@ if __name__ == '__main__':
     '''
     заранее подготавливаем 
     '''
-    for el in open('data/levels/level_1/level_1').readlines():
-        playeer = Player().player_load(el)  # получаем список координат игрока
-        walls = LoadGame().walls_load(el)  # получаем список координат стен
+    for line in open('data/levels/level_1/level_1').readlines():
+        playeer = Player().player_load(line)  # получаем список координат игрока
+        walls = LoadGame().walls_load(line)  # получаем список координат стен
         if not winning_point:
             winning_point = walls
-        rise = Rise().rise_load(el)  # получаем список координат риса
+        rise = Rise().rise_load(line)  # получаем список координат риса
         if rise:
             new_rise = [el1 * 10 for el1 in rise]
             rise_x_y[k] = new_rise
@@ -83,15 +82,15 @@ if __name__ == '__main__':
             player = pygame.image.load('data/images/chinese.png').convert_alpha()
             player = pygame.transform.scale(player, (25, 25))
             x_pos = playeer[0] * 9.6
-            nach_x_pos = playeer[0] * 9.6
+            elementary_x_pos = x_pos
             y_pos = k - 6
-            nach_y_pos = k - 6
+            elementary_y_pos = y_pos
         k += 20
     running = True
     clock = pygame.time.Clock()
     v = 100  # пикселей в секунду
     # наш счет
-    myfont = pygame.font.SysFont('Comic Sans MS', 30)
+    my_font_1 = pygame.font.SysFont('Comic Sans MS', 30)
     rise_result = 0
     '''
     подготавливаем шрифт и размер
@@ -104,10 +103,11 @@ if __name__ == '__main__':
     lost = False
     lvl = False
     clr = [255, 0, 255]
-    bg = 'black'
+    background_color = 'black'
     font_size = 15
     font_2 = pygame.font.Font(None, font_size)
-    button1 = Button(position=(260, 730), size=(200, 50), clr=(220, 220, 220), cngclr=(123, 100, 255),
+    button1 = Button(position=(260, 730), size=(200, 50), clr=(220, 220, 220),
+                     cngclr=(123, 100, 255),
                      func=setfalse, text='Start Game')
     button2 = Button((510, 730), (200, 50), (220, 220, 220), (123, 100, 255), exit, 'Exit')
 
@@ -119,41 +119,37 @@ if __name__ == '__main__':
         всё для менюхи
         '''
     clr_2 = [255, 0, 255]
-    bg = 'black'
     os.chdir("data/levels")
     button_list_2 = []
-    sss = 250
-    button = Button(position=(380, sss), size=(300, 50), clr=(220, 220, 220),
-                 cngclr=(123, 100, 255),
-                 func=set_menuska, text='level_1')
+    button = Button(position=(380, 250), size=(300, 50), clr=(220, 220, 220),
+                    cngclr=(123, 100, 255),
+                    func=set_menuska, text='level_1')
     button_list_2.append(button)
-    sss += 80
     os.chdir('../..')
     while running:
         if menushka == 'choice_level':
-            screen.fill(bg)
-            #
-            x_ppos = 40
+            screen.fill(background_color)
+            x_position_2 = 40
             random_list = ['0', '1', '1', '1']
-            qwws = 100
+            elementary_level_position = 100
             '''
             прорисовка красивых элементов для
             начала загрузки игры
             '''
-            for el in range(6):
+            for line in range(6):
                 for i in range(25):
                     s = random.choice(random_list)
                     if s == '0':
                         pygame.draw.line(screen, (123, 0, 255),
-                                         [x_ppos, qwws],
-                                         [x_ppos + 10, qwws], el)
-                    x_ppos += 30
-                qwws += 20
-                x_ppos = 40
+                                         [x_position_2, elementary_level_position],
+                                         [x_position_2 + 10, elementary_level_position], line)
+                    x_position_2 += 30
+                elementary_level_position += 20
+                x_position_2 = 40
             #
-            myfont = pygame.font.SysFont('Comic Sans MS', 100)
-            textsurface = myfont.render(f'CHOICE YOUR LEVEL!', False, (123, 100, 255))
-            screen.blit(textsurface, (20, 40))
+            my_font_1 = pygame.font.SysFont('Comic Sans MS', 100)
+            text_surface = my_font_1.render(f'CHOICE YOUR LEVEL!', False, (123, 100, 255))
+            screen.blit(text_surface, (20, 40))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -174,24 +170,24 @@ if __name__ == '__main__':
             pygame.display.update()
             clock.tick(60)
         elif menushka == 'menu':
-            screen.fill(bg)
-            x_ppos = 40
+            screen.fill(background_color)
+            x_position_2 = 40
             random_list = ['0', '1', '1', '1']
-            qwws = 500
+            elementary_level_position = 500
             '''
             прорисовка красивых элементов для
             начала загрузки игры
             '''
-            for el in range(8):
+            for line in range(8):
                 for i in range(25):
                     s = random.choice(random_list)
                     if s == '0':
                         pygame.draw.line(screen, (123, 0, 255),
-                                         [x_ppos, qwws],
-                                         [x_ppos + 10, qwws], el)
-                    x_ppos += 30
-                qwws += 20
-                x_ppos = 40
+                                         [x_position_2, elementary_level_position],
+                                         [x_position_2 + 10, elementary_level_position], line)
+                    x_position_2 += 30
+                elementary_level_position += 20
+                x_position_2 = 40
             pygame.draw.rect(screen, (123, 0, 255),
                              (260, 140, 70, 370))
             pygame.draw.rect(screen, (123, 100, 255),
@@ -200,9 +196,9 @@ if __name__ == '__main__':
                              (335, 400, 10, 110))
             pygame.draw.rect(screen, (123, 100, 255),
                              (360, 140, 100, 370), 6)
-            myfont = pygame.font.SysFont('Comic Sans MS', 110)
-            textsurface = myfont.render(f'THE EVIL CHINESE', False, (123, 100, 255))
-            screen.blit(textsurface, (60, 50))
+            my_font_1 = pygame.font.SysFont('Comic Sans MS', 110)
+            text_surface = my_font_1.render(f'THE EVIL CHINESE', False, (123, 100, 255))
+            screen.blit(text_surface, (60, 50))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -223,8 +219,8 @@ if __name__ == '__main__':
             pygame.display.update()
             clock.tick(60)
         elif 'game' in menushka:
-            levell = menushka.split('|')[1]
-            myfont = pygame.font.SysFont('Comic Sans MS', 30)
+            what_level = menushka.split('|')[1]
+            my_font_1 = pygame.font.SysFont('Comic Sans MS', 30)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -234,10 +230,10 @@ if __name__ == '__main__':
                     if event.key == pygame.K_ESCAPE:
                         menushka = 'choice_level'
                         rise_result = 0
-                        x_pos = nach_x_pos
-                        y_pos = nach_y_pos
+                        x_pos = elementary_x_pos
+                        y_pos = elementary_y_pos
             k = 0
-            screen.fill((0, 0, 0))
+            screen.fill(background_color)
             '''
             проверка на то соответствуют ли
             наши координаты, координатам которые +-
@@ -264,18 +260,19 @@ if __name__ == '__main__':
                         pygame.time.wait(5000)
                         menushka = 'choice_level'
                         rise_result = 0
-                        x_pos = nach_x_pos
-                        y_pos = nach_y_pos
+                        x_pos = elementary_x_pos
+                        y_pos = elementary_y_pos
                         lvl = False
             '''
             отрисовка количества риса
             '''
             if rise_result >= 0:
-                textsurface = myfont.render(f'Количество риса: {rise_result}', False, 'blue')
-                screen.blit(textsurface, (550, 0))
+                text_surface = my_font_1.render(f'Количество риса: {rise_result}', False, 'blue')
+                screen.blit(text_surface, (550, 0))
             else:
-                textsurface = myfont.render(f'Вы должны партии: {abs(rise_result)}', False, 'blue')
-                screen.blit(textsurface, (550, 0))
+                text_surface = my_font_1.render(f'Вы должны партии: {abs(rise_result)}', False,
+                                                'blue')
+                screen.blit(text_surface, (550, 0))
             '''
             отрисовка:
             стен
@@ -284,10 +281,10 @@ if __name__ == '__main__':
             '''
             os.chdir('..')
             os.chdir('The_Evil_Chinese')
-            for el in open(f'data/levels/{levell}/{levell}').readlines():
-                walls = LoadGame().walls_load(el)  # получаем список координат стен
-                floar = LoadGame().floor_load(el)  # получаем список координат пола
-                rise = Rise().rise_load(el)  # получаем список координат риса
+            for line in open(f'data/levels/{what_level}/{what_level}').readlines():
+                walls = LoadGame().walls_load(line)  # получаем список координат стен
+                floar = LoadGame().floor_load(line)  # получаем список координат пола
+                rise = Rise().rise_load(line)  # получаем список координат риса
                 if walls:  # --> если не пустой
                     for el1 in walls:  # проходимся по элементам т.к. может быть не одна стена
                         el1 *= 10  # подгоняем под размеры
@@ -298,8 +295,8 @@ if __name__ == '__main__':
                         pygame.draw.line(screen, (254, 0, 0, 255), (el1 - 10, k), (el1 + 10, k))
                 if rise_x_y:  # рисуем зеленый квадрат(рис)
                     for y in rise_x_y:
-                        for el in rise_x_y[y]:
-                            pygame.draw.rect(screen, 'green', (int(el), int(y), 5, 5))
+                        for line in rise_x_y[y]:
+                            pygame.draw.rect(screen, 'green', (int(line), int(y), 5, 5))
                 k += 20
             screen.blit(player, (x_pos, y_pos))
             '''
@@ -318,20 +315,20 @@ if __name__ == '__main__':
             # проверка на то попал ли игрок в рис, если да - удаляем из словаря этот рис
             # простым языком проверка на то коснулся ли он риса, если да - удаляем с карты
             # {180: [50], 280: [50, 90], 380: [150, 260], 600: [150, 220]}
-            for el in rise_x_y:
-                if el - 20 <= y_pos <= el:
-                    for qw in rise_x_y[el]:
+            for line in rise_x_y:
+                if line - 20 <= y_pos <= line:
+                    for qw in rise_x_y[line]:
                         if qw - 20 <= x_pos <= qw:
-                            rise_x_y[el].remove(qw)
+                            rise_x_y[line].remove(qw)
                             Music().pause()
                             Music().nyam_nyam()
                             for i in range(1000):
                                 s = 100 - 12 * 12 + 3
                             Music().background_music('Музыка на фон.mp3')
                             rise_result += 1
-                            textsurface = myfont.render(f'Количество риса: {rise_result}', False,
-                                                        'blue')
-                            screen.blit(textsurface, (600, 0))
+                            text_surface = my_font_1.render(f'Количество риса: {rise_result}', False,
+                                                            'blue')
+                            screen.blit(text_surface, (600, 0))
             pygame.display.flip()
             sp = []
             '''
@@ -355,7 +352,7 @@ if __name__ == '__main__':
                 color = screen.get_at((int(x_pos + 20), int(y_pos + 20)))
                 if color == (254, 0, 0, 255) or color == (0, 254, 0, 0):
                     sp.append('Минус один рис')
-                if sp != []:
+                if sp:
                     rise_result -= 1
             except IndexError:
                 pass

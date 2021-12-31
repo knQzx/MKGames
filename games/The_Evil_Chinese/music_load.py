@@ -1,4 +1,5 @@
 import time
+
 import pygame
 
 
@@ -27,4 +28,3 @@ class Music:
     def nyam_nyam(self):
         song = pygame.mixer.Sound('data/musics/Скушал рис.mp3')
         song.play()
-
