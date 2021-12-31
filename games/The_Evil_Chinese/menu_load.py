@@ -1,5 +1,3 @@
-import random
-
 import pygame
 
 
@@ -40,5 +38,6 @@ class Button:
             self.curclr = self.cngclr
 
     def call_back(self, *args):
+        print(args)
         if self.func:
             return self.func(*args)
