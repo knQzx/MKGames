@@ -32,7 +32,7 @@ class Hero(pygame.sprite.Sprite):
         self.game_screen = game_screen
 
         self.frames = []
-        self.cut_sheet(operations.load_image('hero.png'), 2, 2)
+        self.cut_sheet(operations.load_image('Hero.png'), 2, 2)
 
         self.current_speed = 0
         self.speeds = [3 * self.game_screen.tile_size, 4 * self.game_screen.tile_size]
