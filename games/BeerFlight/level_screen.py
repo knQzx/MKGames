@@ -29,6 +29,10 @@ class LevelScreen:
                     if self.next_button.rect.collidepoint(*event.pos):
                         self.cur_level_num += 1
                         self.cur_level_num %= self.levels_count
+                    for level_sprite in self.levels_group:
+                        if level_sprite.num == self.cur_level_num:
+                            if level_sprite.play_button.rect.collidepoint(*event.pos):
+                                return self.setup.GameScreen(level_sprite.level)
             self.levels_group.update()
             self.levels_group.draw(self.setup.screen)
             self.buttons_group.update()
@@ -83,6 +87,7 @@ class LevelTitle(pygame.sprite.Sprite):
     def __init__(self, num, level, level_screen: LevelScreen):
         super().__init__()
         self.num = num
+        self.level = level
         self.name = level['name']
         self.stars = level['stars']
         self.completed = level['completed']

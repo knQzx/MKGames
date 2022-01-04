@@ -24,7 +24,13 @@ class Camera:
 
 
 class GameScreen:
+    def __init__(self, level):
+        self.level = level
+        print(self.level)
+
     def start(self, setup):
+        self.setup = setup
+
         while True:
             setup.screen.fill(pygame.Color('green'))
             for event in pygame.event.get():
