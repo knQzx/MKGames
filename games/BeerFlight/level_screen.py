@@ -9,9 +9,12 @@ class LevelScreen:
 
         self.levels_group = pygame.sprite.Group()
         self.buttons_group = pygame.sprite.Group()
+        self.cur_level_num = 0
         with open('data/levels/levels.json', 'r') as read_file:  # Import levels
             self.levels = json.load(read_file)
         self.add_levels()
+
+        self.set_level_change_buttons()
 
         background = operations.load_image('Beer.png')
         while True:
@@ -20,7 +23,12 @@ class LevelScreen:
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    return setup.GameScreen()
+                    if self.prev_button.rect.collidepoint(*event.pos):
+                        self.cur_level_num -= 1
+                        self.cur_level_num %= self.levels_count
+                    if self.next_button.rect.collidepoint(*event.pos):
+                        self.cur_level_num += 1
+                        self.cur_level_num %= self.levels_count
             self.levels_group.update()
             self.levels_group.draw(self.setup.screen)
             self.buttons_group.update()
@@ -29,6 +37,7 @@ class LevelScreen:
             setup.clock.tick(setup.FPS)
 
     def add_levels(self):
+        self.levels_count = len(self.levels['level_names'])
         for num, level_name in enumerate(self.levels['level_names']):
             with open(f'data/levels/{level_name}/level.json') as read_file:
                 level = json.load(read_file)
@@ -38,6 +47,36 @@ class LevelScreen:
     def add_level(self, level, num):
         level_sprite = LevelTitle(num, level, self)
         self.levels_group.add(level_sprite)
+
+    def set_level_change_buttons(self):
+        # prev button
+        image = pygame.Surface((150, 150), pygame.SRCALPHA, 32)
+        pygame.draw.polygon(
+            image,
+            pygame.Color('red'),
+            (
+                (0, image.get_height() // 2),
+                (image.get_width(), 0),
+                (image.get_width(), image.get_height())
+            )
+        )
+        self.prev_button = Button(image, (0, self.setup.height // 2 - image.get_height() // 2))
+        self.buttons_group.add(self.prev_button)
+
+        # next button
+        image = pygame.Surface((150, 150), pygame.SRCALPHA, 32)
+        pygame.draw.polygon(
+            image,
+            pygame.Color('red'),
+            (
+                (0, 0),
+                (image.get_width(), image.get_height() // 2),
+                (0, image.get_height())
+            )
+        )
+        self.next_button = Button(image, (self.setup.width - image.get_width(),
+                                          self.setup.height // 2 - image.get_height() // 2))
+        self.buttons_group.add(self.next_button)
 
 
 class LevelTitle(pygame.sprite.Sprite):
@@ -56,7 +95,8 @@ class LevelTitle(pygame.sprite.Sprite):
         self.draw()
 
     def update(self):
-        self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2, \
+        self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+                                   self.level_screen.setup.width * (self.level_screen.cur_level_num - self.num), \
                                    operations.get_screen_coords(self.level_screen.setup.screen, (0, 0.161))[1]
 
     def draw(self):
