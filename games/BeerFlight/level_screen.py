@@ -97,12 +97,29 @@ class LevelTitle(pygame.sprite.Sprite):
         self.size = operations.get_screen_coords(self.level_screen.setup.screen, rel_size)
         self.image = pygame.Surface(self.size, pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+            self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num), \
+            operations.get_screen_coords(self.level_screen.setup.screen, (0, 0.161))[1]
+        self.x, self.y = self.rect.x, self.rect.y
         self.draw()
 
     def update(self):
-        self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-                                   self.level_screen.setup.width * (self.level_screen.cur_level_num - self.num), \
-                                   operations.get_screen_coords(self.level_screen.setup.screen, (0, 0.161))[1]
+        move_x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+                 self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
+
+        if move_x - self.rect.x > 0:
+            self.x += 1000 / self.level_screen.setup.FPS
+            if self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+                    self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num) - self.x < 0:
+                self.x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+                         self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
+        elif move_x - self.rect.x < 0:
+            self.x -= 1000 / self.level_screen.setup.FPS
+            if self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+                    self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num) - self.x > 0:
+                self.x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
+                         self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
+        self.rect.x = int(self.x)
 
     def draw(self):
         pygame.draw.rect(  # Draw shell
