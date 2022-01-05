@@ -41,8 +41,11 @@ def get_screen_coords(screen, rel_pos):
 def check_collide(sprite: pygame.sprite.Sprite, *collide_groups):
     collide = False
     for collide_group in collide_groups:
-        if pygame.sprite.spritecollideany(sprite, collide_group):
-            collide = True
+        for collide_sprite in collide_group:
+            if pygame.sprite.collide_mask(sprite, collide_sprite):
+                collide = True
+                break
+        if collide:
             break
     return collide
 
