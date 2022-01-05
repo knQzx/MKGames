@@ -1,6 +1,7 @@
 import os
 import sys
 import pygame
+from math import pi, atan, sin, cos
 
 
 def load_image(name, colorkey=None):
@@ -35,6 +36,66 @@ def draw_background(screen, image):
 
 def get_screen_coords(screen, rel_pos):
     return screen.get_width() * rel_pos[0], screen.get_height() * rel_pos[1]
+
+
+def check_collide(sprite: pygame.sprite.Sprite, *collide_groups):
+    collide = False
+    for collide_group in collide_groups:
+        for collide_sprite in collide_group:
+            if pygame.sprite.collide_mask(sprite, collide_sprite):
+                collide = True
+                break
+        if collide:
+            break
+    return collide
+
+
+def move_sprite(sprite: pygame.sprite.Sprite, d_coords, *collide_groups):
+    dx, dy = d_coords
+    dist = (dx ** 2 + dy ** 2) ** 0.5
+
+    prev_rect = sprite.rect.copy()
+    sprite.x, sprite.y = sprite.x + dx, sprite.y + dy
+    sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
+    if not check_collide(sprite, *collide_groups):
+        return True
+    sprite.rect = prev_rect.copy()
+
+    start_angle = atan(dy / dx)
+    collide_perms = [{'angle': pi / 2, 'prev_d_angle': pi / 2, 'prev_result': True},
+                     {'angle': -pi / 2, 'prev_d_angle': -pi / 2, 'prev_result': True}]
+
+    ITER_COUNT = 6
+    for _ in range(ITER_COUNT):
+        for collide_perm in collide_perms:
+            if collide_perm['prev_result']:
+                d_angle = collide_perm['angle'] - collide_perm['prev_d_angle'] / 2
+            else:
+                d_angle = collide_perm['angle'] + collide_perm['prev_d_angle'] / 2
+            angle = start_angle + d_angle
+            strength_mul = 1 - d_angle / pi / 2
+            sprite.x, sprite.y = sprite.x + cos(angle) * dist * strength_mul, \
+                sprite.y + sin(angle) * dist * strength_mul
+            sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
+            collide_perm['prev_result'] = check_collide(sprite, *collide_groups)
+            sprite.rect = prev_rect.copy()
+            collide_perm['angle'] = angle
+        if len(collide_perms) == 2:
+            if collide_perms[0]['prev_result'] != collide_perms[1]['prev_result']:
+                collide_perms = list(filter(lambda elem: elem['prev_result'], collide_perms))
+    collide_perm = collide_perms[0]
+    if not collide_perms[0]['prev_result']:
+        d_angle = collide_perm['angle'] + collide_perm['prev_d_angle']
+    else:
+        d_angle = collide_perm['angle']
+    angle = start_angle + d_angle
+    strength_mul = 1 - d_angle / pi / 2
+    sprite.x, sprite.y = sprite.x + cos(angle) * dist * strength_mul, sprite.y + sin(angle) * dist * strength_mul
+    sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
+    if check_collide(sprite, *collide_groups):
+        sprite.rect = prev_rect.copy()
+        return False
+    return True
 
 
 def terminate():
