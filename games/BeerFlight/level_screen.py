@@ -32,7 +32,7 @@ class LevelScreen:
                     for level_sprite in self.levels_group:
                         if level_sprite.num == self.cur_level_num:
                             if level_sprite.play_button.rect.collidepoint(*event.pos):
-                                return self.setup.GameScreen(level_sprite.level)
+                                return self.setup.GameScreen(level_sprite.level['name'])
             self.levels_group.update()
             self.levels_group.draw(self.setup.screen)
             self.buttons_group.update()
