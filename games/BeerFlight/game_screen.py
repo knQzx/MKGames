@@ -27,6 +27,36 @@ class Camera:
         draw_group.draw(screen)
 
 
+class Hero(pygame.sprite.Sprite):
+    def __init__(self, x, y, game_screen):
+        super().__init__()
+        self.game_screen = game_screen
+        self.ticks_to_change = 10
+        self.sheet_state = 0
+        self.cur_frame = 0
+        self.sheets = [
+            self.cut_sheet(operations.load_image('Walking_hero_sheet5x2.png'), 5, 2),
+            self.cut_sheet('Flying_hero_sheet1x1.png', 1, 1)
+        ]
+        self.image = self.sheets[self.sheet_state][self.cur_frame]
+        self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
+
+    def cut_sheet(self, sheet, columns, rows):
+        frames = []
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                frames.append(pygame.transform.scale(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)), (self.game_screen.tile_size, self.game_screen.tile_size)))
+        return frames
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.sheets[self.sheet_state] * self.ticks_to_change)
+        self.image = self.sheets[self.sheet_state][self.cur_frame // self.ticks_to_change]
+
+
 class GameScreen:
     def __init__(self, name):
         self.name = name
@@ -99,6 +129,10 @@ class GameScreen:
 
         camera = Camera()
 
+        hero = Hero(0, self.map.height - 1, self)
+        hero_group = pygame.sprite.Group()
+        hero_group.add(hero)
+
         background = operations.load_image(self.level['background'])
         while True:
             operations.draw_background(self.setup.screen, background)
@@ -106,5 +140,7 @@ class GameScreen:
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
             camera.draw_group(self.tiles_group, self.setup.screen)
+            hero.update()
+            hero_group.draw(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)

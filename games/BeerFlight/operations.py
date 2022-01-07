@@ -58,7 +58,7 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, *collide_groups):
     sprite.x, sprite.y = sprite.x + dx, sprite.y + dy
     sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
     if not check_collide(sprite, *collide_groups):
-        return True
+        return {'collide': False, 'sprite_move': True}
     sprite.rect = prev_rect.copy()
 
     start_angle = atan(dy / dx)
@@ -94,8 +94,8 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, *collide_groups):
     sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
     if check_collide(sprite, *collide_groups):
         sprite.rect = prev_rect.copy()
-        return False
-    return True
+        return {'collide': True, 'sprite_move': False}
+    return {'collide': True, 'sprite_move': True}
 
 
 def terminate():
