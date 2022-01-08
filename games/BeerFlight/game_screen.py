@@ -115,7 +115,7 @@ class GameScreen:
                 trigger.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
                 trigger_id = self.get_tile_id((x, y), 0)
                 if trigger_id in self.boss_triggers:
-                    trigger.add(self.boss_triggers)
+                    self.boss_triggers_group.add(trigger)
 
     def get_tile_id(self, position, layer):
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
