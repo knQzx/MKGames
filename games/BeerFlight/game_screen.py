@@ -11,10 +11,9 @@ class Camera:
 
     def apply(self, obj):
         obj.rect.x += self.dx
-        obj.rect.y += self.dy
 
     def update(self, target, game_screen):
-        self.dx = -(target.rect.x + target.rect.w // 2 - game_screen.setup.width // 2)
+        self.dx = -(target.rect.x + target.rect.w // 2 - game_screen.setup.width // 4)
         target.rect.x += self.dx
         target.x += self.dx
 
@@ -45,7 +44,7 @@ class Hero(pygame.sprite.Sprite):
         self.mask.fill()
         self.x, self.y = self.rect.x, self.rect.y
 
-        self.speed = 2
+        self.speed = 2 / self.game_screen.setup.FPS
 
     def cut_sheet(self, sheet, columns, rows):
         frames = []
@@ -62,7 +61,7 @@ class Hero(pygame.sprite.Sprite):
         self.cur_frame = (self.cur_frame + 1) % len(self.sheets[self.sheet_state] * self.ticks_to_change)
         self.image = self.sheets[self.sheet_state][self.cur_frame // self.ticks_to_change]
 
-        operations.move_sprite(self, (self.speed, 0), self.game_screen.default_tiles_group)
+        operations.move_sprite(self, (self.speed * self.game_screen.tile_size, 0), self.game_screen.default_tiles_group)
 
 
 class GameScreen:
@@ -147,8 +146,11 @@ class GameScreen:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
-            camera.draw_group(self.tiles_group, self.setup.screen)
             hero.update()
+            camera.update(hero, self)
+            for tile in self.tiles_group:
+                camera.apply(tile)
+            camera.draw_group(self.tiles_group, self.setup.screen)
             hero_group.draw(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
