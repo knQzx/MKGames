@@ -34,7 +34,7 @@ def draw_background(screen, image):
     image = pygame.transform.scale(image, new_image_size)
     rect = image.get_rect()
     rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2, \
-                     screen.get_height() // 2 - image.get_height() // 2
+        screen.get_height() // 2 - image.get_height() // 2
     screen.blit(image, rect)
 
 
