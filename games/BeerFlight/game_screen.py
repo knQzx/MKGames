@@ -36,25 +36,33 @@ class Hero(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.sheets = [
             self.cut_sheet(operations.load_image('Walking_hero_sheet5x2.png'), 5, 2),
-            self.cut_sheet('Flying_hero_sheet1x1.png', 1, 1)
+            self.cut_sheet(operations.load_image('Flying_hero_sheet1x1.png'), 1, 1)
         ]
         self.image = self.sheets[self.sheet_state][self.cur_frame]
+        self.rect = self.image.get_rect()
         self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
+        self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
+        self.mask.fill()
+        self.x, self.y = self.rect.x, self.rect.y
+
+        self.speed = 2
 
     def cut_sheet(self, sheet, columns, rows):
         frames = []
-        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
-                                sheet.get_height() // rows)
+        rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                           sheet.get_height() // rows)
         for j in range(rows):
             for i in range(columns):
-                frame_location = (self.rect.w * i, self.rect.h * j)
+                frame_location = (rect.w * i, rect.h * j)
                 frames.append(pygame.transform.scale(sheet.subsurface(pygame.Rect(
-                    frame_location, self.rect.size)), (self.game_screen.tile_size, self.game_screen.tile_size)))
+                    frame_location, rect.size)), (self.game_screen.tile_size, self.game_screen.tile_size)))
         return frames
 
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.sheets[self.sheet_state] * self.ticks_to_change)
         self.image = self.sheets[self.sheet_state][self.cur_frame // self.ticks_to_change]
+
+        operations.move_sprite(self, (self.speed, 0), self.game_screen.default_tiles_group)
 
 
 class GameScreen:
@@ -89,7 +97,7 @@ class GameScreen:
                 tile.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
                 tile_id = self.get_tile_id((x, y), 0)
                 if tile_id in self.default_tiles:
-                    self.death_tiles_group.add(tile)
+                    self.default_tiles_group.add(tile)
                 if tile_id in self.stars_tiles:
                     self.stars_tiles_group.add(tile)
                 if tile_id in self.death_tiles:
