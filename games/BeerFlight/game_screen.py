@@ -74,11 +74,11 @@ class GameScreen:
         self.map = pytmx.load_pygame(f'data/levels/{self.name}/level.tmx')
         self.height = self.map.height
         self.width = self.map.width
-        self.default_tiles = [1, 2, 3, 6]
-        self.stars_tiles = [5]
-        self.boss_triggers = [7]
-        self.death_tiles = [4, 8, 12, 9, 10, 11]
-        self.end_tiles = [15, 16]
+        self.default_tiles = [1, 2, 3]
+        self.stars_tiles = [6]
+        self.boss_triggers = [8]
+        self.death_tiles = [4, 9, 14, 11, 12, 13]
+        self.end_tiles = [9, 15]
 
         pygame.mixer.music.load(f'data/music/{self.level["music"]}')
         pygame.mixer.music.play(-1)
