@@ -108,13 +108,13 @@ class LevelTitle(pygame.sprite.Sprite):
                  self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
 
         if move_x - self.rect.x > 0:
-            self.x += 1000 / self.level_screen.setup.FPS
+            self.x += 4000 / self.level_screen.setup.FPS
             if self.level_screen.setup.width // 2 - self.rect.width // 2 + \
                     self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num) - self.x < 0:
                 self.x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
                          self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
         elif move_x - self.rect.x < 0:
-            self.x -= 1000 / self.level_screen.setup.FPS
+            self.x -= 4000 / self.level_screen.setup.FPS
             if self.level_screen.setup.width // 2 - self.rect.width // 2 + \
                     self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num) - self.x > 0:
                 self.x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \

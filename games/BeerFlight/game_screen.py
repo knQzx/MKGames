@@ -44,7 +44,7 @@ class Hero(pygame.sprite.Sprite):
         self.mask.fill()
         self.x, self.y = self.rect.x, self.rect.y
 
-        self.dx, self.dy = 2, 0
+        self.dx, self.dy = 5, 0
 
     def cut_sheet(self, sheet, columns, rows):
         frames = []
@@ -68,7 +68,7 @@ class Hero(pygame.sprite.Sprite):
             self.game_screen.default_tiles_group
         )
 
-        self.dy += (9.8 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.dy += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
 class GameScreen:
@@ -149,11 +149,18 @@ class GameScreen:
         hero_group.add(hero)
 
         background = operations.load_image(self.level['background'])
+        space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
         while True:
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
+                if event.type in (pygame.KEYDOWN, pygame.KEYUP):
+                    if event.key == pygame.K_SPACE:
+                        space_clicked = not space_clicked
+            if space_clicked:
+                hero.dy -= self.PPM * 9 / self.setup.FPS
+                hero.sheet_state = 1
             hero.update()
             camera.update(hero, self)
             for tile in self.tiles_group:

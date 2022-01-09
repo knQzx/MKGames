@@ -82,6 +82,8 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
         sprite.rect.y = int(sprite.y - dy)
         if not check_collide(sprite, screen, *collide_groups):
             sprite.y -= dy
+            if dy > 0:
+                sprite.sheet_state = 0
             sprite.rect.y = int(sprite.y)
             sprite.dy = 0
             sprite.rect.x = int(sprite.x + dx)
