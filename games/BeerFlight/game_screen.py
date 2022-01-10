@@ -38,13 +38,13 @@ class Hero(pygame.sprite.Sprite):
             self.cut_sheet(operations.load_image('Flying_hero_sheet1x1.png'), 1, 1)
         ]
         self.image = self.sheets[self.sheet_state][self.cur_frame]
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
         self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
         self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
         self.mask.fill()
         self.x, self.y = self.rect.x, self.rect.y
 
-        self.speed = 2 / self.game_screen.setup.FPS
+        self.dx, self.dy = 5, 0
 
     def cut_sheet(self, sheet, columns, rows):
         frames = []
@@ -54,14 +54,21 @@ class Hero(pygame.sprite.Sprite):
             for i in range(columns):
                 frame_location = (rect.w * i, rect.h * j)
                 frames.append(pygame.transform.scale(sheet.subsurface(pygame.Rect(
-                    frame_location, rect.size)), (self.game_screen.tile_size, self.game_screen.tile_size)))
+                    frame_location, rect.size)), (self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)))
         return frames
 
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.sheets[self.sheet_state] * self.ticks_to_change)
         self.image = self.sheets[self.sheet_state][self.cur_frame // self.ticks_to_change]
 
-        operations.move_sprite(self, (self.speed * self.game_screen.tile_size, 0), self.game_screen.default_tiles_group)
+        move_data = operations.move_sprite(
+            self,
+            (self.dx * self.game_screen.tile_size / self.game_screen.setup.FPS, self.dy * 0.2),
+            self.game_screen.setup.screen,
+            self.game_screen.default_tiles_group
+        )
+
+        self.dy += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
 class GameScreen:
@@ -125,6 +132,7 @@ class GameScreen:
 
         self.load_level()
         self.tile_size = self.setup.height // self.map.height
+        self.PPM = self.tile_size / 2
 
         self.tiles_group = pygame.sprite.Group()
         self.default_tiles_group = pygame.sprite.Group()
@@ -141,11 +149,18 @@ class GameScreen:
         hero_group.add(hero)
 
         background = operations.load_image(self.level['background'])
+        space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
         while True:
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
+                if event.type in (pygame.KEYDOWN, pygame.KEYUP):
+                    if event.key == pygame.K_SPACE:
+                        space_clicked = not space_clicked
+            if space_clicked:
+                hero.dy -= self.PPM * 9 / self.setup.FPS
+                hero.sheet_state = 1
             hero.update()
             camera.update(hero, self)
             for tile in self.tiles_group:
