@@ -1,7 +1,8 @@
 import os
 import sys
-import pygame
 from math import pi, atan, sin, cos
+
+import pygame
 
 
 def get_sign(num):
@@ -69,6 +70,7 @@ def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, 
         if collide:
             break
     return collide
+
 
 
 def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface, *collide_groups):

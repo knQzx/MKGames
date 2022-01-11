@@ -1,6 +1,8 @@
-import pygame
 import json
+
+import pygame
 import pytmx
+
 import operations
 
 
@@ -58,7 +60,8 @@ class Hero(pygame.sprite.Sprite):
         return frames
 
     def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.sheets[self.sheet_state] * self.ticks_to_change)
+        self.cur_frame = (self.cur_frame + 1) % len(
+            self.sheets[self.sheet_state] * self.ticks_to_change)
         self.image = self.sheets[self.sheet_state][self.cur_frame // self.ticks_to_change]
 
         move_data = operations.move_sprite(

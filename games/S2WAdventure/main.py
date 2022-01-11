@@ -7,9 +7,11 @@ from game_screen import GameScreen
 class Setup:
     def __init__(self):
         pygame.init()
-
         display_info = pygame.display.Info()
-        self.size = self.width, self.height = display_info.current_w, display_info.current_h
+        if display_info.current_w >= 2500:
+            self.size = self.width, self.height = display_info.current_w - 1000, display_info.current_h - 80
+        else:
+            self.size = self.width, self.height = display_info.current_w, display_info.current_h
         self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         self.size = self.width, self.height = pygame.display.get_window_size()
         pygame.display.set_caption('S2WAdventure')

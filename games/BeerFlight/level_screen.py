@@ -1,6 +1,8 @@
-import pygame
-import operations
 import json
+
+import pygame
+
+import operations
 
 
 class LevelScreen:
@@ -98,8 +100,10 @@ class LevelTitle(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.size, pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-            self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num), \
-            operations.get_screen_coords(self.level_screen.setup.screen, (0, 0.161))[1]
+                                   self.level_screen.setup.width * (
+                                               self.num - self.level_screen.cur_level_num), \
+                                   operations.get_screen_coords(self.level_screen.setup.screen,
+                                                                (0, 0.161))[1]
         self.x, self.y = self.rect.x, self.rect.y
         self.draw()
 
@@ -110,13 +114,15 @@ class LevelTitle(pygame.sprite.Sprite):
         if move_x - self.rect.x > 0:
             self.x += 4000 / self.level_screen.setup.FPS
             if self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-                    self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num) - self.x < 0:
+                    self.level_screen.setup.width * (
+                    self.num - self.level_screen.cur_level_num) - self.x < 0:
                 self.x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
                          self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
         elif move_x - self.rect.x < 0:
             self.x -= 4000 / self.level_screen.setup.FPS
             if self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-                    self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num) - self.x > 0:
+                    self.level_screen.setup.width * (
+                    self.num - self.level_screen.cur_level_num) - self.x > 0:
                 self.x = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
                          self.level_screen.setup.width * (self.num - self.level_screen.cur_level_num)
         self.rect.x = int(self.x)
@@ -158,7 +164,8 @@ class LevelTitle(pygame.sprite.Sprite):
         count = self.stars
         star_image = pygame.transform.scale(operations.load_image('Star.png'), (145, 145))
         star_image_rect = star_image.get_rect()
-        star_image_rect.x = self.size[0] // 2 - (star_image.get_width() * count + indent * (count - 1)) // 2
+        star_image_rect.x = self.size[0] // 2 - (
+                    star_image.get_width() * count + indent * (count - 1)) // 2
         star_image_rect.y = operations.get_screen_coords(self.image, (0, 0.30))[1]
         for _ in range(count):
             self.image.blit(
@@ -187,8 +194,9 @@ class LevelTitle(pygame.sprite.Sprite):
             play_button_text_rect
         )
         self.play_button = SpriteButton(self, play_button_image,
-                                        (self.image.get_width() // 2 - play_button_text.get_width() // 2 - indent,
-                                         operations.get_screen_coords(self.image, (0, 0.748))[1]))
+                                        (
+                                        self.image.get_width() // 2 - play_button_text.get_width() // 2 - indent,
+                                        operations.get_screen_coords(self.image, (0, 0.748))[1]))
         self.level_screen.buttons_group.add(self.play_button)
 
 

@@ -11,8 +11,9 @@ class MyWidget(QMainWindow):
         super().__init__()
         uic.loadUi('UI/app.ui', self)  # Загружаем дизайн
         self.pushButton.clicked.connect(self.run_s2adv)
-        self.pushButton_2.clicked.connect(self.run_flappy_bird)
-        self.pushButton_3.clicked.connect(self.run_snake)
+        self.pushButton_2.clicked.connect(self.run_beer_flight)
+        self.pushButton_3.clicked.connect(self.run_tec)
+        self.setWindowTitle('META')
         """
         we upload the user to the database 
         if he is not there yet and change the coin
@@ -43,11 +44,11 @@ class MyWidget(QMainWindow):
                 self.pushButton.setText('PLAY')
             else:
                 self.pushButton.setText('BUY (1 coin)')
-            if 'Bird' in s[4]:
+            if 'BeerFlight' in s[4]:
                 self.pushButton_2.setText('PLAY')
             else:
                 self.pushButton_2.setText('BUY (1 coin)')
-            if 'Snake' in s[4]:
+            if 'The_Evil_Chinese' in s[4]:
                 self.pushButton_3.setText('PLAY')
             else:
                 self.pushButton_3.setText('BUY (1 coin)')
@@ -117,20 +118,20 @@ class MyWidget(QMainWindow):
                 os.chdir('../../')
                 ex.show()
 
-    def run_flappy_bird(self):
+    def run_beer_flight(self):
         conn = sqlite3.connect("database.sqlite")
         cursor = conn.cursor()
         cursor.execute("""SELECT * FROM User""")
         if cursor.fetchone()[4] == '-':
             cursor.execute(f"""UPDATE User
-                               SET purchased_games = 'Bird'""")
+                               SET purchased_games = 'BeerFlight'""")
             conn.commit()
             cursor.execute(f"""UPDATE User
                                SET Coins = '0'""")
             conn.commit()
             msg = QMessageBox()
             msg.setWindowTitle("Выполнена покупка игры")
-            msg.setText("Выполнена покупка игры Bird")
+            msg.setText("Выполнена покупка игры BeerFlight")
             msg.exec_()
             self.pushButton_2.setText('PLAY')
             s = cursor.execute("""SELECT * FROM User""").fetchone()
@@ -140,16 +141,16 @@ class MyWidget(QMainWindow):
             cursor = conn.cursor()
             cursor.execute("""SELECT * FROM User""")
             s = (cursor.fetchone())
-            if int(s[0]) - 1 >= 0 and 'Bird' not in s[4]:
+            if int(s[0]) - 1 >= 0 and 'BeerFlight' not in s[4]:
                 cursor.execute(f"""UPDATE User
-                                   SET purchased_games = '{s[4]}, Bird'""")
+                                   SET purchased_games = '{s[4]}, BeerFlight'""")
                 conn.commit()
                 cursor.execute(f"""UPDATE User
                                    SET Coins = '{int(s[0]) - 1}'""")
                 conn.commit()
                 msg = QMessageBox()
                 msg.setWindowTitle("Выполнена покупка игры")
-                msg.setText("Выполнена покупка игры Bird")
+                msg.setText("Выполнена покупка игры BeerFlight")
                 msg.exec_()
                 self.pushButton_2.setText('PLAY')
                 s = cursor.execute("""SELECT * FROM User""").fetchone()
@@ -158,29 +159,29 @@ class MyWidget(QMainWindow):
             elif int(s[0]) - 1 < 0:
                 msg = QMessageBox()
                 msg.setWindowTitle("Не выполнена покупка игры")
-                msg.setText("Не выполнена покупка игры Bird из-за недостатка средств")
+                msg.setText("Не выполнена покупка игры BeerFlight из-за недостатка средств")
                 msg.exec_()
-            elif 'Bird' in s[4]:
+            elif 'BeerFlight' in s[4]:
                 ex.close()
-                os.chdir('games/FlappyBird')
+                os.chdir('games/BeerFlight')
                 os.system('python3 main.py')
                 os.chdir('../../')
                 ex.show()
 
-    def run_snake(self):
+    def run_tec(self):
         conn = sqlite3.connect("database.sqlite")
         cursor = conn.cursor()
         cursor.execute("""SELECT * FROM User""")
         if cursor.fetchone()[4] == '-':
             cursor.execute(f"""UPDATE User
-                               SET purchased_games = 'Snake'""")
+                               SET purchased_games = 'The_Evil_Chinese'""")
             conn.commit()
             cursor.execute(f"""UPDATE User
                                SET Coins = '0'""")
             conn.commit()
             msg = QMessageBox()
             msg.setWindowTitle("Выполнена покупка игры")
-            msg.setText("Выполнена покупка игры Snake")
+            msg.setText("Выполнена покупка игры The_Evil_Chinese")
             msg.exec_()
             self.pushButton_3.setText('PLAY')
             s = cursor.execute("""SELECT * FROM User""").fetchone()
@@ -190,16 +191,16 @@ class MyWidget(QMainWindow):
             cursor = conn.cursor()
             cursor.execute("""SELECT * FROM User""")
             s = (cursor.fetchone())
-            if int(s[0]) - 1 >= 0 and 'Snake' not in s[4]:
+            if int(s[0]) - 1 >= 0 and 'The_Evil_Chinese' not in s[4]:
                 cursor.execute(f"""UPDATE User
-                                   SET purchased_games = '{s[4]}, Snake'""")
+                                   SET purchased_games = '{s[4]}, The_Evil_Chinese'""")
                 conn.commit()
                 cursor.execute(f"""UPDATE User
                                    SET Coins = '{int(s[0]) - 1}'""")
                 conn.commit()
                 msg = QMessageBox()
                 msg.setWindowTitle("Выполнена покупка игры")
-                msg.setText("Выполнена покупка игры Snake")
+                msg.setText("Выполнена покупка игры The_Evil_Chinese")
                 msg.exec_()
                 self.pushButton_3.setText('PLAY')
                 s = cursor.execute("""SELECT * FROM User""").fetchone()
@@ -208,11 +209,11 @@ class MyWidget(QMainWindow):
             elif int(s[0]) - 1 < 0:
                 msg = QMessageBox()
                 msg.setWindowTitle("Не выполнена покупка игры")
-                msg.setText("Не выполнена покупка игры Snake из-за недостатка средств")
+                msg.setText("Не выполнена покупка игры The_Evil_Chinese из-за недостатка средств")
                 msg.exec_()
-            elif 'Snake' in s[4]:
+            elif 'The_Evil_Chinese' in s[4]:
                 ex.close()
-                os.chdir('games/WarShake')
+                os.chdir('games/The_Evil_Chinese')
                 os.system('python3 main.py')
                 os.chdir('../../')
                 ex.show()
