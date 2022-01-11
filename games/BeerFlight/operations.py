@@ -1,8 +1,7 @@
 import os
 import sys
-from math import pi, atan, sin, cos
-
 import pygame
+from math import pi, atan, sin, cos
 
 
 def get_sign(num):
@@ -35,7 +34,7 @@ def draw_background(screen, image):
     image = pygame.transform.scale(image, new_image_size)
     rect = image.get_rect()
     rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2, \
-                     screen.get_height() // 2 - image.get_height() // 2
+        screen.get_height() // 2 - image.get_height() // 2
     screen.blit(image, rect)
 
 
@@ -43,29 +42,11 @@ def get_screen_coords(screen, rel_pos):
     return screen.get_width() * rel_pos[0], screen.get_height() * rel_pos[1]
 
 
-def collide_mask_rect(left, right):
-    x_offset = right.rect[0] - left.rect[0]
-    y_offset = right.rect[1] - left.rect[1]
-    try:
-        left_mask = left.mask
-    except AttributeError:
-        left_mask = pygame.mask.Mask(left.size, True)
-    try:
-        right_mask = right.mask
-    except AttributeError:
-        right_mask = pygame.mask.Mask(right.size, True)
-    return left_mask.overlap(right_mask, (x_offset, y_offset))
-
-
-def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, *collide_groups):
+def check_collide(sprite: pygame.sprite.Sprite, *collide_groups):
     collide = False
-    if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
-                                    screen.get_width(),
-                                    screen.get_height() - sprite.rect.height * 2)):
-        return True
     for collide_group in collide_groups:
         for collide_sprite in collide_group:
-            if collide_mask_rect(sprite, collide_sprite):
+            if pygame.sprite.collide_mask(sprite, collide_sprite):
                 collide = True
                 break
         if collide:
@@ -73,70 +54,50 @@ def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, 
     return collide
 
 
-def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface,
-                *collide_groups):
+def move_sprite(sprite: pygame.sprite.Sprite, d_coords, *collide_groups):
     dx, dy = d_coords
     dist = (dx ** 2 + dy ** 2) ** 0.5
 
     prev_rect = sprite.rect.copy()
-    sprite.rect.x, sprite.rect.y = int(sprite.x + dx), int(sprite.y + dy)
-    if check_collide(sprite, screen, *collide_groups):
-        sprite.rect = prev_rect.copy()
-        sprite.rect.y = int(sprite.y - dy)
-        if not check_collide(sprite, screen, *collide_groups):
-            sprite.y -= dy
-            if dy > 0:
-                sprite.sheet_state = 0
-            sprite.rect.y = int(sprite.y)
-            sprite.dy = 0
-            sprite.rect.x = int(sprite.x + dx)
-        else:
-            sprite.rect.x, sprite.rect.y = int(sprite.x + dx), int(sprite.y + dy)
-    if not check_collide(sprite, screen, *collide_groups):
-        sprite.x += dx
-        sprite.y += dy
+    sprite.x, sprite.y = sprite.x + dx, sprite.y + dy
+    sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
+    if not check_collide(sprite, *collide_groups):
         return {'collide': False, 'sprite_move': True}
     sprite.rect = prev_rect.copy()
-    if sprite.dy == 0:
-        sprite.rect.y = int(sprite.y)
 
     start_angle = atan(dy / dx)
-    collide_perms = [{'d_angle': pi / 2, 'prev_ch_d_angle': pi / 2, 'prev_result': False},
-                     {'d_angle': -pi / 2, 'prev_ch_d_angle': -pi / 2, 'prev_result': False}]
+    collide_perms = [{'angle': -pi / 2, 'prev_d_angle': -pi / 2, 'prev_result': False}]
 
     ITER_COUNT = 6
     for _ in range(ITER_COUNT):
         for collide_perm in collide_perms:
             if not collide_perm['prev_result']:
-                d_angle = get_sign(collide_perm['d_angle']) * \
-                          (abs(collide_perm['d_angle']) - abs(collide_perm['prev_ch_d_angle'] / 2))
+                d_angle = get_sign(collide_perm['angle']) * \
+                          (abs(collide_perm['angle']) - abs(collide_perm['prev_d_angle'] / 2))
             else:
-                d_angle = get_sign(collide_perm['d_angle']) * \
-                          min((abs(collide_perm['d_angle']) + abs(collide_perm['prev_ch_d_angle'])),
-                              pi / 2)
+                d_angle = get_sign(collide_perm['angle']) * \
+                          min((abs(collide_perm['angle']) + abs(collide_perm['prev_d_angle'])), pi / 2)
             angle = start_angle + d_angle
             sprite.rect.x, sprite.rect.y = int(sprite.x + cos(angle) * dist), \
-                                           int(sprite.y + sin(angle) * dist)
+                int(sprite.y + sin(angle) * dist)
+            collide_perm['angle'] = angle
             if collide_perm['prev_result']:
-                collide_perm['prev_ch_d_angle'] = collide_perm['prev_ch_d_angle'] / 2
-            else:
-                collide_perm['prev_ch_d_angle'] = abs(d_angle) - abs(collide_perm['d_angle'])
-            collide_perm['d_angle'] = d_angle
-            collide_perm['prev_result'] = check_collide(sprite, screen, *collide_groups)
+                d_angle /= 2
+            collide_perm['prev_d_angle'] = d_angle
+            collide_perm['prev_result'] = check_collide(sprite, *collide_groups)
             sprite.rect = prev_rect.copy()
         if len(collide_perms) == 2:
             if collide_perms[0]['prev_result'] != collide_perms[1]['prev_result']:
                 collide_perms = list(filter(lambda elem: not elem['prev_result'], collide_perms))
     collide_perm = collide_perms[0]
     if collide_perms[0]['prev_result']:
-        d_angle = get_sign(collide_perm['d_angle']) * (
-                abs(collide_perm['d_angle']) + abs(collide_perm['prev_ch_d_angle']))
+        d_angle = get_sign(collide_perm['angle']) * (abs(collide_perm['angle']) + abs(collide_perm['prev_d_angle']))
     else:
-        d_angle = collide_perm['d_angle']
+        d_angle = collide_perm['angle']
     angle = start_angle + d_angle
     sprite.x, sprite.y = sprite.x + cos(angle) * dist, sprite.y + sin(angle) * dist
     sprite.rect.x, sprite.rect.y = int(sprite.x), int(sprite.y)
-    if check_collide(sprite, screen, *collide_groups):
+    if check_collide(sprite, *collide_groups):
         sprite.rect = prev_rect.copy()
         sprite.x, sprite.y = sprite.rect.x, sprite.rect.y
         return {'collide': True, 'sprite_move': False}
