@@ -60,8 +60,7 @@ def collide_mask_rect(left, right):
 def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, *collide_groups):
     collide = False
     if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
-                                    screen.get_width(),
-                                    screen.get_height() - sprite.rect.height * 2)):
+                                    screen.get_width(), screen.get_height() - sprite.rect.height * 2)):
         return True
     for collide_group in collide_groups:
         for collide_sprite in collide_group:
@@ -73,8 +72,8 @@ def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, 
     return collide
 
 
-def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface,
-                *collide_groups):
+
+def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface, *collide_groups):
     dx, dy = d_coords
     dist = (dx ** 2 + dy ** 2) ** 0.5
 
@@ -112,8 +111,7 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
                           (abs(collide_perm['d_angle']) - abs(collide_perm['prev_ch_d_angle'] / 2))
             else:
                 d_angle = get_sign(collide_perm['d_angle']) * \
-                          min((abs(collide_perm['d_angle']) + abs(collide_perm['prev_ch_d_angle'])),
-                              pi / 2)
+                          min((abs(collide_perm['d_angle']) + abs(collide_perm['prev_ch_d_angle'])), pi / 2)
             angle = start_angle + d_angle
             sprite.rect.x, sprite.rect.y = int(sprite.x + cos(angle) * dist), \
                                            int(sprite.y + sin(angle) * dist)
