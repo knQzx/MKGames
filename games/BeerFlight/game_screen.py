@@ -40,8 +40,7 @@ class Hero(pygame.sprite.Sprite):
             self.cut_sheet(operations.load_image('Flying_hero_sheet1x1.png'), 1, 1)
         ]
         self.image = self.sheets[self.sheet_state][self.cur_frame]
-        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9,
-                                self.game_screen.tile_size * 0.9)
+        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
         self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
         self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
         self.mask.fill()
@@ -57,8 +56,7 @@ class Hero(pygame.sprite.Sprite):
             for i in range(columns):
                 frame_location = (rect.w * i, rect.h * j)
                 frames.append(pygame.transform.scale(sheet.subsurface(pygame.Rect(
-                    frame_location, rect.size)),
-                    (self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)))
+                    frame_location, rect.size)), (self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)))
         return frames
 
     def update(self):
