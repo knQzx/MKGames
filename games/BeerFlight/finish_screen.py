@@ -60,8 +60,17 @@ class FinishScreen:
         if self.play_again_button.rect.collidepoint(*pos):
             self.screen_out = self.setup.GameScreen(self.level_name)
 
+    def set_music(self):
+        if self.win:
+            pygame.mixer.music.load(f'data/music/Win.mp3')
+        else:
+            pygame.mixer.music.load(f'data/music/Lose.mp3')
+        pygame.mixer.music.play(1)
+
     def start(self, setup):
         self.setup = setup
+
+        self.set_music()
 
         self.image = pygame.Surface(self.setup.screen.get_size(), pygame.SRCALPHA, 32)
         self.draw()
@@ -78,6 +87,7 @@ class FinishScreen:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.check_click(event.pos)
             if self.screen_out is not None:
+                pygame.mixer.music.pause()
                 return self.screen_out
             self.setup.screen.blit(self.image, self.image.get_rect())
             self.buttons_group.draw(self.setup.screen)
