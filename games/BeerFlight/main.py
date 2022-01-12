@@ -1,8 +1,7 @@
 import pygame
-
-import operations
 from game_screen import GameScreen
 from level_screen import LevelScreen
+from finish_screen import FinishScreen
 
 
 class Setup:  # Screen loop and program data
@@ -22,6 +21,7 @@ class Setup:  # Screen loop and program data
 
         self.LevelScreen = LevelScreen  # Screen storage
         self.GameScreen = GameScreen
+        self.FinishScreen = FinishScreen
 
         self.state = self.LevelScreen()  # Screen loop
         while True:
