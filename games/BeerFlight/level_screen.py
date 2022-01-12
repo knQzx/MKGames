@@ -5,13 +5,13 @@ import pygame
 import operations
 
 
-class LevelScreen:
-    def start(self, setup):
+class LevelScreen:  # Screen for select level
+    def start(self, setup):  # Function launching window display
         self.setup = setup
 
-        self.levels_group = pygame.sprite.Group()
-        self.buttons_group = pygame.sprite.Group()
-        self.cur_level_num = 0
+        self.levels_group = pygame.sprite.Group()  # The group will store the sprites of the level selection screens
+        self.buttons_group = pygame.sprite.Group()  # The group will store the sprites of the buttons
+        self.cur_level_num = 0  # Selected level select screen
         with open('data/levels/levels.json', 'r') as read_file:  # Import levels
             self.levels = json.load(read_file)
         self.add_levels()
@@ -42,7 +42,7 @@ class LevelScreen:
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
 
-    def add_levels(self):
+    def add_levels(self):  # Function add level selection screen
         self.levels_count = len(self.levels['level_names'])
         for num, level_name in enumerate(self.levels['level_names']):
             with open(f'data/levels/{level_name}/level.json') as read_file:
@@ -85,7 +85,7 @@ class LevelScreen:
         self.buttons_group.add(self.next_button)
 
 
-class LevelTitle(pygame.sprite.Sprite):
+class LevelTitle(pygame.sprite.Sprite):  # Class of level select screen
     def __init__(self, num, level, level_screen: LevelScreen):
         super().__init__()
         self.num = num
@@ -100,10 +100,9 @@ class LevelTitle(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.size, pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-                                   self.level_screen.setup.width * (
-                                               self.num - self.level_screen.cur_level_num), \
-                                   operations.get_screen_coords(self.level_screen.setup.screen,
-                                                                (0, 0.161))[1]
+            self.level_screen.setup.width * (
+                                           self.num - self.level_screen.cur_level_num), \
+            operations.get_screen_coords(self.level_screen.setup.screen, (0, 0.161))[1]
         self.x, self.y = self.rect.x, self.rect.y
         self.draw()
 
@@ -165,7 +164,7 @@ class LevelTitle(pygame.sprite.Sprite):
         star_image = pygame.transform.scale(operations.load_image('Star.png'), (145, 145))
         star_image_rect = star_image.get_rect()
         star_image_rect.x = self.size[0] // 2 - (
-                    star_image.get_width() * count + indent * (count - 1)) // 2
+                star_image.get_width() * count + indent * (count - 1)) // 2
         star_image_rect.y = operations.get_screen_coords(self.image, (0, 0.30))[1]
         for _ in range(count):
             self.image.blit(
@@ -195,8 +194,9 @@ class LevelTitle(pygame.sprite.Sprite):
         )
         self.play_button = SpriteButton(self, play_button_image,
                                         (
-                                        self.image.get_width() // 2 - play_button_text.get_width() // 2 - indent,
-                                        operations.get_screen_coords(self.image, (0, 0.748))[1]))
+                                            self.image.get_width() // 2 - play_button_text.get_width() // 2 - indent,
+                                            operations.get_screen_coords(self.image, (0, 0.748))[1])
+                                        )
         self.level_screen.buttons_group.add(self.play_button)
 
 
