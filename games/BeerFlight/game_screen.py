@@ -126,7 +126,6 @@ class GameScreen:
                 trigger.rect = tile.image.get_rect()
                 trigger.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
                 trigger_id = self.get_tile_id((x, y), 0)
-                print(trigger_id)
                 if trigger_id in self.boss_triggers:
                     self.boss_triggers_group.add(trigger)
 
@@ -166,7 +165,7 @@ class GameScreen:
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
                 if not self.running:
-                    return self.setup.StartScreen
+                    return self.setup.StartScreen()
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
                 if event.type in (pygame.KEYDOWN, pygame.KEYUP):
