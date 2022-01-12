@@ -40,7 +40,8 @@ class Hero(pygame.sprite.Sprite):
             self.cut_sheet(operations.load_image('Flying_hero_sheet1x1.png'), 1, 1)
         ]
         self.image = self.sheets[self.sheet_state][self.cur_frame]
-        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
+        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9,
+                                self.game_screen.tile_size * 0.9)
         self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
         self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
         self.mask.fill()
@@ -56,7 +57,8 @@ class Hero(pygame.sprite.Sprite):
             for i in range(columns):
                 frame_location = (rect.w * i, rect.h * j)
                 frames.append(pygame.transform.scale(sheet.subsurface(pygame.Rect(
-                    frame_location, rect.size)), (self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)))
+                    frame_location, rect.size)),
+                    (self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)))
         return frames
 
     def update(self):
@@ -124,11 +126,17 @@ class GameScreen:
                 trigger.rect = tile.image.get_rect()
                 trigger.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
                 trigger_id = self.get_tile_id((x, y), 0)
+                print(trigger_id)
                 if trigger_id in self.boss_triggers:
                     self.boss_triggers_group.add(trigger)
 
     def get_tile_id(self, position, layer):
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
+
+    def check_lasers(self, hero):  # --> check collision with lasers
+        for el in self.death_tiles_group:
+            if pygame.sprite.collide_mask(hero, el):
+                self.running = False
 
     def start(self, setup):
         self.setup = setup
@@ -153,14 +161,20 @@ class GameScreen:
 
         background = operations.load_image(self.level['background'])
         space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
+        self.running = True
         while True:
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
+                if not self.running:
+                    return self.setup.StartScreen
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
                 if event.type in (pygame.KEYDOWN, pygame.KEYUP):
                     if event.key == pygame.K_SPACE:
                         space_clicked = not space_clicked
+                    if event.key == pygame.K_ESCAPE:
+                        setup.operations.terminate()
+            self.check_lasers(hero)
             if space_clicked:
                 hero.dy -= self.PPM * 9 / self.setup.FPS
                 hero.sheet_state = 1
