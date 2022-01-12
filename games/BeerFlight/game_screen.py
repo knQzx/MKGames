@@ -136,6 +136,7 @@ class GameScreen:
         for el in self.death_tiles_group:
             if pygame.sprite.collide_mask(hero, el):
                 self.running = False
+                break
 
     def start(self, setup):
         self.setup = setup
@@ -163,10 +164,10 @@ class GameScreen:
         self.running = True
         while True:
             operations.draw_background(self.setup.screen, background)
+            if not self.running:
+                pygame.mixer.music.pause()
+                return self.setup.StartScreen()
             for event in pygame.event.get():
-                if not self.running:
-                    pygame.mixer.music.pause()
-                    return self.setup.StartScreen()
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
                 if event.type in (pygame.KEYDOWN, pygame.KEYUP):
@@ -174,7 +175,6 @@ class GameScreen:
                         space_clicked = not space_clicked
                     if event.key == pygame.K_ESCAPE:
                         setup.operations.terminate()
-            self.check_lasers(hero)
             if space_clicked:
                 hero.dy -= self.PPM * 9 / self.setup.FPS
                 hero.sheet_state = 1
@@ -184,5 +184,6 @@ class GameScreen:
                 camera.apply(tile)
             camera.draw_group(self.tiles_group, self.setup.screen)
             hero_group.draw(self.setup.screen)
+            self.check_lasers(hero)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
