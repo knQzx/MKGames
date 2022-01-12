@@ -165,6 +165,7 @@ class GameScreen:
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
                 if not self.running:
+                    pygame.mixer.music.pause()
                     return self.setup.StartScreen()
                 if event.type == pygame.QUIT:
                     setup.operations.terminate()
