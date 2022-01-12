@@ -173,7 +173,7 @@ class LevelTitle(pygame.sprite.Sprite):  # Class of level select screen
             )
             star_image_rect.x += star_image.get_width() + indent
 
-        indent = 30
+        indent = 30  # Draw play button
         play_button_text = font.render('Play', True, pygame.Color('black'))
         play_button_image = pygame.Surface(
             (indent * 2 + play_button_text.get_width(),
