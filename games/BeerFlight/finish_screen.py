@@ -1,4 +1,5 @@
 import pygame
+
 import operations
 
 
@@ -20,7 +21,6 @@ class FinishScreen:
         # render font parameters
         text = font.render(text_str, True, pygame.Color('yellow'))
         text_rect = text.get_rect()
-        # get width for x parameter
         text_rect.x = self.image.get_width() // 2 - text.get_width() // 2
         # get get screen coords for y parameter
         text_rect.y = operations.get_screen_coords(self.image, (0, 0.25))[1]
@@ -45,7 +45,9 @@ class FinishScreen:
             star_image_rect.x += star_image.get_width() + indent
 
     def set_buttons(self):  # --> in this function, we directly make buttons
-        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'), (100, 100))  # Place play again button
+        # Place play again button
+        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'),
+                                                  (100, 100))
         # get width for x parameter
         new_x = int(self.image.get_width() / 2 + play_again_image.get_rect().width / 2 * 1.5)
         # get height for y parameter
@@ -58,7 +60,9 @@ class FinishScreen:
         # add buttons to group
         self.buttons_group.add(self.play_again_button)
         # initialization image for select level
-        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'), (100, 100))  # Place select level button
+        # Place select level button
+        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'),
+                                                    (100, 100))
         # get width for x parameter
         new_x = int(self.image.get_width() / 2 - select_level_image.get_rect().width * 1.5)
         # get height for y parameter

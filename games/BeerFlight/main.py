@@ -1,7 +1,8 @@
 import pygame
+
+from finish_screen import FinishScreen
 from game_screen import GameScreen
 from level_screen import LevelScreen
-from finish_screen import FinishScreen
 
 
 class Setup:  # Screen loop and program data
@@ -9,7 +10,8 @@ class Setup:  # Screen loop and program data
         pygame.init()
         display_info = pygame.display.Info()  # Window settings
         if display_info.current_w >= 2500:
-            self.size = self.width, self.height = display_info.current_w - 1000, display_info.current_h - 80
+            self.width, self.height = display_info.current_w - 1000, display_info.current_h - 80
+            self.size = self.width, self.height
         else:
             self.size = self.width, self.height = display_info.current_w, display_info.current_h
         self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)

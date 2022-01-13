@@ -8,8 +8,8 @@ import operations
 class LevelScreen:  # Screen for select level
     def start(self, setup):  # Function launching window display
         self.setup = setup
-
-        self.levels_group = pygame.sprite.Group()  # The group will store the sprites of the level selection screens
+        # The group will store the sprites of the level selection screens
+        self.levels_group = pygame.sprite.Group()
         self.buttons_group = pygame.sprite.Group()  # The group will store the sprites of the buttons
         self.cur_level_num = 0  # Selected level select screen
         with open('data/levels/levels.json', 'r') as read_file:  # Import levels
@@ -115,11 +115,12 @@ class LevelTitle(pygame.sprite.Sprite):  # --> class of level select screen
         # set image
         self.image = pygame.Surface(self.size, pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
-        # get x and get y
+        # set x and set y
         self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-            self.level_screen.setup.width * (
+                                   self.level_screen.setup.width * (
                                            self.num - self.level_screen.cur_level_num), \
-            operations.get_screen_coords(self.level_screen.setup.screen, (0, 0.161))[1]
+                                   operations.get_screen_coords(self.level_screen.setup.screen,
+                                                                (0, 0.161))[1]
         self.x, self.y = self.rect.x, self.rect.y
         # draw
         self.draw()
@@ -187,7 +188,7 @@ class LevelTitle(pygame.sprite.Sprite):  # --> class of level select screen
         # load star image
         star_image = pygame.transform.scale(operations.load_image('Star.png'), (145, 145))
         star_image_rect = star_image.get_rect()
-        # get x coordinate
+        # set x coordinate
         star_image_rect.x = self.size[0] // 2 - (
                 star_image.get_width() * count + indent * (count - 1)) // 2
         # get y coordinate
@@ -222,11 +223,9 @@ class LevelTitle(pygame.sprite.Sprite):  # --> class of level select screen
             play_button_text_rect
         )
         # initialization button
-        self.play_button = SpriteButton(self, play_button_image,
-                                        (
-                                            self.image.get_width() // 2 - play_button_text.get_width() // 2 - indent,
-                                            operations.get_screen_coords(self.image, (0, 0.748))[1])
-                                        )
+        self.play_button = SpriteButton(self, play_button_image, (
+            self.image.get_width() // 2 - play_button_text.get_width() // 2 - indent,
+            operations.get_screen_coords(self.image, (0, 0.748))[1]))
         # add play button to level_screen.buttons_group
         self.level_screen.buttons_group.add(self.play_button)
 

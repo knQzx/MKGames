@@ -8,7 +8,6 @@ import operations
 
 class Camera:  # Camera whose apply objects with main sprite
     def __init__(self):
-        # self.setup.FinishScreen(self.name, False, 3)
         self.dx = 0
         self.dy = 0
 
