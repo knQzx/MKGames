@@ -1,4 +1,5 @@
 import json
+import os
 
 import pygame
 import pytmx
@@ -173,6 +174,15 @@ class GameScreen:  # Screen for game at any level
                 self.stars += 1
                 tile.kill()
 
+    def update_db(self):
+        with open(os.path.join('data', 'levels', self.name, 'level.json'), 'r') as read_file:
+            data = json.load(read_file)
+        data['completed'] = data['completed'] or self.win
+        if self.win:
+            data['stars'] = max(data['stars'], self.stars)
+        with open(os.path.join('data', 'levels', self.name, 'level.json'), 'w') as write_file:
+            json.dump(data, write_file)
+
     def start(self, setup):
         self.setup = setup
 
@@ -206,6 +216,7 @@ class GameScreen:  # Screen for game at any level
             operations.draw_background(self.setup.screen, background)
             if not self.running:
                 pygame.mixer.music.pause()
+                self.update_db()
                 return self.setup.FinishScreen(self.name, self.win, self.stars)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

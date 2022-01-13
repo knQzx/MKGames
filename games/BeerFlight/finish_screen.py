@@ -21,19 +21,20 @@ class FinishScreen:
         text_rect.y = operations.get_screen_coords(self.image, (0, 0.25))[1]
         self.image.blit(text, text_rect)
 
-        indent = 30  # Draw stars
-        count = self.stars
-        star_image = pygame.transform.scale(operations.load_image('Star.png'), (145, 145))
-        star_image_rect = star_image.get_rect()
-        star_image_rect.x = self.image.get_width() // 2 - (
-                star_image.get_width() * count + indent * (count - 1)) // 2
-        star_image_rect.y = operations.get_screen_coords(self.image, (0, 0.4))[1]
-        for _ in range(count):
-            self.image.blit(
-                star_image,
-                star_image_rect
-            )
-            star_image_rect.x += star_image.get_width() + indent
+        if self.win:  # Draw stars
+            indent = 30
+            count = self.stars
+            star_image = pygame.transform.scale(operations.load_image('Star.png'), (145, 145))
+            star_image_rect = star_image.get_rect()
+            star_image_rect.x = self.image.get_width() // 2 - (
+                    star_image.get_width() * count + indent * (count - 1)) // 2
+            star_image_rect.y = operations.get_screen_coords(self.image, (0, 0.4))[1]
+            for _ in range(count):
+                self.image.blit(
+                    star_image,
+                    star_image_rect
+                )
+                star_image_rect.x += star_image.get_width() + indent
 
     def set_buttons(self):
         play_again_image = pygame.transform.scale(operations.load_image('Play again.png'), (100, 100))  # Place play again button
