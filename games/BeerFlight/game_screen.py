@@ -74,6 +74,10 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
             self.game_screen.default_tiles_group
         )
 
+        if not move_data['sprite_move']:
+            self.game_screen.win = False
+            self.game_screen.running = False
+
         self.dy += (5 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
@@ -168,6 +172,25 @@ class GameScreen:  # Screen for game at any level
                 self.running = False
                 break
 
+    def check_hit(self, hero, *collide_groups):
+        prev_rect = hero.rect.copy()
+        hero.rect.x += int(hero.dx)
+        if operations.check_collide(hero, self.setup.screen, *collide_groups):
+            changed_rect = hero.rect.copy()
+            hit = True
+            for sign in [-1, 1]:
+                hero.rect.y += int((hero.dx + 5) * sign)
+                if not operations.check_collide(hero, self.setup.screen, *collide_groups):
+                    hit = False
+                hero.rect = changed_rect.copy()
+        else:
+            hit = False
+        hero.rect = prev_rect.copy()
+
+        if hit:
+            self.win = False
+            self.running = False
+
     def check_stars(self, hero):
         for tile in self.stars_tiles_group:
             if pygame.sprite.collide_mask(hero, tile):
@@ -250,6 +273,7 @@ class GameScreen:  # Screen for game at any level
 
             self.check_lasers(hero)  # Check collision with final game tiles
             self.check_end(hero)
+            self.check_hit(hero, self.default_tiles_group)
 
             self.check_stars(hero)  # Check collision with non-final game tiles
 
