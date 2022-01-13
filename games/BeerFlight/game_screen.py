@@ -73,7 +73,7 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
             self.game_screen.default_tiles_group
         )
 
-        self.dy += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.dy += (5 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
 class Particle(pygame.sprite.Sprite):
@@ -88,11 +88,11 @@ class Particle(pygame.sprite.Sprite):
 
     def update(self):
         FPS = self.game_screen.setup.FPS
-        self.width -= 5 / FPS
-        self.height -= 5 / FPS
+        self.width -= 20 / FPS
+        self.height -= 20 / FPS
         self.rect.width, self.rect.height = int(self.width), int(self.height)
         self.image = pygame.transform.scale(self.image, (int(self.width), int(self.height)))
-        self.image.set_alpha(100 - (20 / FPS))
+        self.image.set_alpha(100 - (50 / FPS))
         if self.width < 0 or self.height < 0:
             self.kill()
 
@@ -192,12 +192,12 @@ class GameScreen:  # Screen for game at any level
                 return self.setup.FinishScreen(self.name, False, 3)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    setup.operations.terminate()
+                    operations.terminate()
                 if event.type in (pygame.KEYDOWN, pygame.KEYUP):
                     if event.key == pygame.K_SPACE:
                         space_clicked = not space_clicked
             if space_clicked:
-                hero.dy -= self.PPM * 9 / self.setup.FPS
+                hero.dy -= self.PPM * 8 / self.setup.FPS
                 hero.sheet_state = 1
                 self.particles_group.add(Particle(
                     pygame.transform.scale(operations.load_image('Smoke.png'),
