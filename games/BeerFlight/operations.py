@@ -5,7 +5,7 @@ from math import pi, atan, sin, cos
 import pygame
 
 
-def get_sign(num):  # Return sign of num
+def get_sign(num):  # --> return sign of num
     return -1 if num < 0 else 1
 
 

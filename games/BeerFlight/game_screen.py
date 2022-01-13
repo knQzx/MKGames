@@ -16,7 +16,7 @@ class Camera:  # Camera whose apply objects with main sprite
         obj.rect.x += self.dx
 
     def update(self, target, game_screen):
-        # обновляем наш параметр dx
+        # updating our dx parameter
         self.dx = -(target.rect.x + target.rect.w // 2 - game_screen.setup.width // 4)
         target.rect.x += self.dx
         target.x += self.dx
@@ -31,7 +31,7 @@ class Camera:  # Camera whose apply objects with main sprite
         draw_group.draw(screen)
 
 
-class Hero(pygame.sprite.Sprite):  # Sprite of main hero
+class Hero(pygame.sprite.Sprite):  # --> sprite of main hero
     def __init__(self, x, y, game_screen):
         super().__init__()
         # we set the default values
@@ -81,7 +81,7 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
         self.dy += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
-class GameScreen:  # Screen for game at any level
+class GameScreen:  # --> screen for game at any level
     def __init__(self, name):
         self.name = name
 
@@ -142,7 +142,7 @@ class GameScreen:  # Screen for game at any level
                 if trigger_id in self.boss_triggers:
                     self.triggers_group.add(trigger)
 
-    def get_tile_id(self, position, layer):  # Return id of tile at position
+    def get_tile_id(self, position, layer):  # --> return id of tile at position
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
 
     def check_lasers(self, hero):  # --> check collision with lasers

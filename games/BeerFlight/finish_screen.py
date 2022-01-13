@@ -22,7 +22,7 @@ class FinishScreen:
         text = font.render(text_str, True, pygame.Color('yellow'))
         text_rect = text.get_rect()
         text_rect.x = self.image.get_width() // 2 - text.get_width() // 2
-        # get get screen coords for y parameter
+        # get screen coords
         text_rect.y = operations.get_screen_coords(self.image, (0, 0.25))[1]
         self.image.blit(text, text_rect)
 
@@ -32,10 +32,10 @@ class FinishScreen:
         # load start image
         star_image = pygame.transform.scale(operations.load_image('Star.png'), (145, 145))
         star_image_rect = star_image.get_rect()
-        # get width for x parameter
+        # get x parameter
         star_image_rect.x = self.image.get_width() // 2 - (
                 star_image.get_width() * count + indent * (count - 1)) // 2
-        # get get screen coords for y parameter
+        # get screen coords
         star_image_rect.y = operations.get_screen_coords(self.image, (0, 0.4))[1]
         for _ in range(count):
             self.image.blit(
@@ -48,9 +48,9 @@ class FinishScreen:
         # Place play again button
         play_again_image = pygame.transform.scale(operations.load_image('Play again.png'),
                                                   (100, 100))
-        # get width for x parameter
+        # get x parameter
         new_x = int(self.image.get_width() / 2 + play_again_image.get_rect().width / 2 * 1.5)
-        # get height for y parameter
+        # get y parameter
         new_y = self.image.get_height() // 2 + play_again_image.get_rect().height
         # initialization "play_again" buttons
         self.play_again_button = Button(
@@ -63,9 +63,9 @@ class FinishScreen:
         # Place select level button
         select_level_image = pygame.transform.scale(operations.load_image('Select level.png'),
                                                     (100, 100))
-        # get width for x parameter
+        # get x parameter
         new_x = int(self.image.get_width() / 2 - select_level_image.get_rect().width * 1.5)
-        # get height for y parameter
+        # get y parameter
         new_y = self.image.get_height() // 2 + select_level_image.get_rect().height
         # initialization "select_level" buttons
         self.select_level_button = Button(

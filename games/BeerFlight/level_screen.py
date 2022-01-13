@@ -5,14 +5,14 @@ import pygame
 import operations
 
 
-class LevelScreen:  # Screen for select level
+class LevelScreen:  # --> screen for select level
     def start(self, setup):  # Function launching window display
         self.setup = setup
         # The group will store the sprites of the level selection screens
         self.levels_group = pygame.sprite.Group()
         self.buttons_group = pygame.sprite.Group()  # The group will store the sprites of the buttons
         self.cur_level_num = 0  # Selected level select screen
-        with open('data/levels/levels.json', 'r') as read_file:  # Import levels
+        with open('data/levels/levels.json', 'r') as read_file:  # --> import levels
             self.levels = json.load(read_file)
         self.add_levels()
 
@@ -115,7 +115,7 @@ class LevelTitle(pygame.sprite.Sprite):  # --> class of level select screen
         # set image
         self.image = pygame.Surface(self.size, pygame.SRCALPHA, 32)
         self.rect = self.image.get_rect()
-        # set x and set y
+        # set x and y
         self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
                                    self.level_screen.setup.width * (
                                            self.num - self.level_screen.cur_level_num), \
