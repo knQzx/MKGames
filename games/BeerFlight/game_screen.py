@@ -71,6 +71,27 @@ class Hero(pygame.sprite.Sprite):
         self.dy += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
+class Particle(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, game_screen):
+        super().__init__(game_screen.particles_group)
+        self.game_screen = game_screen
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(x, y)
+        self.x, self.y = self.rect.x, self.rect.y
+        self.width, self.height = self.image.get_size()
+
+    def update(self):
+        FPS = self.game_screen.setup.FPS
+        self.width -= 5 / FPS
+        self.height -= 5 / FPS
+        self.rect.width, self.rect.height = int(self.width), int(self.height)
+        self.image = pygame.transform.scale(self.image, (int(self.width), int(self.height)))
+        self.image.set_alpha(100 - (20 / FPS))
+        if self.width < 0 or self.height < 0:
+            self.kill()
+
+
 class GameScreen:
     def __init__(self, name):
         self.name = name
@@ -148,6 +169,8 @@ class GameScreen:
         hero_group = pygame.sprite.Group()
         hero_group.add(hero)
 
+        self.particles_group = pygame.sprite.Group()
+
         background = operations.load_image(self.level['background'])
         space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
         while True:
@@ -161,11 +184,23 @@ class GameScreen:
             if space_clicked:
                 hero.dy -= self.PPM * 9 / self.setup.FPS
                 hero.sheet_state = 1
+                self.particles_group.add(Particle(
+                    pygame.transform.scale(operations.load_image('Smoke.png'),
+                                           (self.tile_size * 0.2, self.tile_size * 0.2)),
+                    hero.rect.x + self.tile_size * 0.4, hero.rect.y + self.tile_size * 0.4,
+                    self
+                ))
             hero.update()
             camera.update(hero, self)
             for tile in self.tiles_group:
                 camera.apply(tile)
+            for particle in self.particles_group:
+                camera.apply(particle)
             camera.draw_group(self.tiles_group, self.setup.screen)
+
+            self.particles_group.update()
+            self.particles_group.draw(self.setup.screen)
+
             hero_group.draw(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
