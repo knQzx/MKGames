@@ -5,7 +5,7 @@ from game_screen import GameScreen
 from level_screen import LevelScreen
 
 
-class Setup:  # Screen loop and program data
+class Setup:  # --> screen loop and program data
     def __init__(self):
         pygame.init()
         display_info = pygame.display.Info()  # Window settings
