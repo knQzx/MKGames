@@ -154,8 +154,16 @@ class GameScreen:  # Screen for game at any level
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
 
     def check_lasers(self, hero):  # --> check collision with lasers
-        for el in self.death_tiles_group:
-            if pygame.sprite.collide_mask(hero, el):
+        for tile in self.death_tiles_group:
+            if pygame.sprite.collide_mask(hero, tile):
+                self.win = False
+                self.running = False
+                break
+
+    def check_end(self, hero):
+        for tile in self.end_tiles_group:
+            if pygame.sprite.collide_mask(hero, tile):
+                self.win = True
                 self.running = False
                 break
 
@@ -184,12 +192,15 @@ class GameScreen:  # Screen for game at any level
 
         background = operations.load_image(self.level['background'])
         space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
+
+        self.win = None
+        self.stars = 0
         self.running = True
         while True:
             operations.draw_background(self.setup.screen, background)
             if not self.running:
                 pygame.mixer.music.pause()
-                return self.setup.FinishScreen(self.name, False, 3)
+                return self.setup.FinishScreen(self.name, self.win, self.stars)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     operations.terminate()
@@ -219,6 +230,9 @@ class GameScreen:  # Screen for game at any level
             self.particles_group.draw(self.setup.screen)
 
             hero_group.draw(self.setup.screen)
+
             self.check_lasers(hero)
+            self.check_end(hero)
+
             pygame.display.flip()
             setup.clock.tick(setup.FPS)

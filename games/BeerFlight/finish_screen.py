@@ -83,7 +83,7 @@ class FinishScreen:
             self.setup.screen.fill(pygame.Color('blue'))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    setup.operations.terminate()
+                    operations.terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.check_click(event.pos)
             if self.screen_out is not None:

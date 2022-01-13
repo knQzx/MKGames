@@ -23,7 +23,7 @@ class LevelScreen:  # Screen for select level
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    setup.operations.terminate()
+                    operations.terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.prev_button.rect.collidepoint(*event.pos):
                         self.cur_level_num -= 1
