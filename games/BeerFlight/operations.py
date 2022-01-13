@@ -1,14 +1,15 @@
 import os
 import sys
-import pygame
 from math import pi, atan, sin, cos
 
+import pygame
 
-def get_sign(num):
+
+def get_sign(num):  # Return sign of num
     return -1 if num < 0 else 1
 
 
-def load_image(name, colorkey=None):
+def load_image(name, colorkey=None):  # Load of image with alpha channel
     filename = os.path.join('data', 'images', name)
     if not os.path.isfile(filename):
         print(f"File with image '{filename}' not found")
@@ -24,7 +25,7 @@ def load_image(name, colorkey=None):
     return image
 
 
-def draw_background(screen, image):
+def draw_background(screen, image):  # Draw image at screen with accounting of display size
     image_ratio = image.get_width() / image.get_height()
     screen_ratio = screen.get_width() / screen.get_height()
     if image_ratio > screen_ratio:
@@ -38,7 +39,7 @@ def draw_background(screen, image):
     screen.blit(image, rect)
 
 
-def get_screen_coords(screen, rel_pos):
+def get_screen_coords(screen, rel_pos):  # Return position at screen by relative position
     return screen.get_width() * rel_pos[0], screen.get_height() * rel_pos[1]
 
 
@@ -56,7 +57,7 @@ def collide_mask_rect(left, right):
     return left_mask.overlap(right_mask, (x_offset, y_offset))
 
 
-def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, *collide_groups):
+def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, *collide_groups):  # Check to collide with groups and screen framework
     collide = False
     if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
                                     screen.get_width(), screen.get_height() - sprite.rect.height * 2)):
@@ -71,7 +72,7 @@ def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface, 
     return collide
 
 
-def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface, *collide_groups):
+def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface, *collide_groups):  # Move sprite with accounting of collisions
     dx, dy = d_coords
     dist = (dx ** 2 + dy ** 2) ** 0.5
 
@@ -112,7 +113,7 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
                           min((abs(collide_perm['d_angle']) + abs(collide_perm['prev_ch_d_angle'])), pi / 2)
             angle = start_angle + d_angle
             sprite.rect.x, sprite.rect.y = int(sprite.x + cos(angle) * dist), \
-                                           int(sprite.y + sin(angle) * dist)
+                int(sprite.y + sin(angle) * dist)
             if collide_perm['prev_result']:
                 collide_perm['prev_ch_d_angle'] = collide_perm['prev_ch_d_angle'] / 2
             else:
@@ -139,6 +140,6 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
     return {'collide': True, 'sprite_move': True}
 
 
-def terminate():
+def terminate():  # Function break the program
     pygame.quit()
     sys.exit()
