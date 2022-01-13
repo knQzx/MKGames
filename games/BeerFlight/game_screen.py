@@ -111,7 +111,7 @@ class GameScreen:  # Screen for game at any level
         self.stars_tiles = [6]
         self.boss_triggers = [8]
         self.death_tiles = [4, 9, 14, 11, 12, 13]
-        self.end_tiles = [9, 15]
+        self.end_tiles = [10, 15]
 
         pygame.mixer.music.load(f'data/music/{self.level["music"]}')
         pygame.mixer.music.play(-1)
@@ -166,6 +166,12 @@ class GameScreen:  # Screen for game at any level
                 self.win = True
                 self.running = False
                 break
+
+    def check_stars(self, hero):
+        for tile in self.stars_tiles_group:
+            if pygame.sprite.collide_mask(hero, tile):
+                self.stars += 1
+                tile.kill()
 
     def start(self, setup):
         self.setup = setup
@@ -231,8 +237,10 @@ class GameScreen:  # Screen for game at any level
 
             hero_group.draw(self.setup.screen)
 
-            self.check_lasers(hero)
+            self.check_lasers(hero)  # Check collision with final game tiles
             self.check_end(hero)
+
+            self.check_stars(hero)  # Check collision with non-final game tiles
 
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
