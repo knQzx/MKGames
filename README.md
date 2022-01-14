@@ -2,8 +2,10 @@
 <a href="#"><img src="https://camo.githubusercontent.com/38f5db5524ba43e7262dfbca1f7d3631ba127fb1596785dfd707d5fc671821c9/687474703a2f2f466f7254686542616467652e636f6d2f696d616765732f6261646765732f6d6164652d776974682d707974686f6e2e737667" alt="PyPI" data-canonical-src="http://ForTheBadge.com/images/badges/made-with-python.svg" style="max-width: 100%;"></a>
 <h1>MKGames - PyGameProject</h1>
 ---
+
 # Проект сделали ученики Академии Яндекса школы 179 [Садиков Магомед](https://github.com/Magprone) и [Новиков Кирилл](https://github.com/knQzx)
 ### For [Yandex Lyceum](https://yandexlyceum.ru)
+
 ---
 # Пояснительная записка:
 1. Игра S2WAdventure это некий платформер который представляет собой возможность уникальнейшее произведение искусства которое было придумано Магомедом Садиковым и не имеет аналогов в России и СНГ. В этой игре ты можешь переключаться между мирами с помощью клавиши "E" что делает ее ещё уникальнее.
