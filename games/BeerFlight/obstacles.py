@@ -23,7 +23,7 @@ class Lasers_horizontally(pygame.sprite.Sprite):
         self.x, self.y = self.rect.x, self.rect.y
 
     def update(self):
-        self.x += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.x -= (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
         self.rect.x = int(self.x)
 
 
@@ -44,7 +44,7 @@ class Rockets(pygame.sprite.Sprite):
         self.x, self.y = self.rect.x, self.rect.y
 
     def update(self):
-        self.x += (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.x -= (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
         self.rect.x = int(self.x)
 
 
