@@ -1,7 +1,6 @@
 import os
 import random
 import re
-import time
 
 import pygame
 
@@ -65,6 +64,7 @@ if __name__ == '__main__':
     #
     k = 0
     rise_x_y = {}
+    start_x_y = {}
     winning_point = []
     '''
     заранее подготавливаем 
@@ -78,6 +78,7 @@ if __name__ == '__main__':
         if rise:
             new_rise = [el1 * 10 for el1 in rise]
             rise_x_y[k] = new_rise
+            start_x_y[k] = new_rise
         if playeer:  # --> если не пустой
             # загружаем картинку нашего злобного китайца
             player = pygame.image.load('data/images/chinese.png').convert_alpha()
@@ -107,7 +108,8 @@ if __name__ == '__main__':
     bg = 'black'
     font_size = 15
     font_2 = pygame.font.Font(None, font_size)
-    button1 = Button(position=(260, 730), size=(200, 50), clr=(220, 220, 220), cngclr=(123, 100, 255),
+    button1 = Button(position=(260, 730), size=(200, 50), clr=(220, 220, 220),
+                     cngclr=(123, 100, 255),
                      func=setfalse, text='Start Game')
     button2 = Button((510, 730), (200, 50), (220, 220, 220), (123, 100, 255), exit, 'Exit')
 
@@ -124,11 +126,13 @@ if __name__ == '__main__':
     button_list_2 = []
     sss = 250
     button = Button(position=(380, sss), size=(300, 50), clr=(220, 220, 220),
-                 cngclr=(123, 100, 255),
-                 func=set_menuska, text='level_1')
+                    cngclr=(123, 100, 255),
+                    func=set_menuska, text='level_1')
     button_list_2.append(button)
     sss += 80
     os.chdir('../..')
+    print(rise_x_y)
+    print(start_x_y)
     while running:
         if menushka == 'choice_level':
             screen.fill(bg)
@@ -250,16 +254,47 @@ if __name__ == '__main__':
                     '''
                     if not lvl:
                         if rise_result >= 10:
-                            win = pygame.image.load('data/achievements/images/the_partia_is_proud_of_you.png')
+                            lvl = True
+                            k = 0
+                            rise_x_y = {}
+                            winning_point = []
+                            '''
+                            заранее подготавливаем 
+                            '''
+                            for el in open('data/levels/level_1/level_1').readlines():
+                                walls = LoadGame().walls_load(el)  # получаем список координат стен
+                                if not winning_point:
+                                    winning_point = walls
+                                rise = Rise().rise_load(el)  # получаем список координат риса
+                                if rise:
+                                    new_rise = [el1 * 10 for el1 in rise]
+                                    rise_x_y[k] = new_rise
+                                k += 20
+                            win = pygame.image.load(
+                                'data/achievements/images/the_partia_is_proud_of_you.png')
                             win = pygame.transform.scale(win, (800, 500))
                             screen.blit(win, (0, 30))
-                            lvl = True
                         else:
+                            lvl = True
+                            k = 0
+                            rise_x_y = {}
+                            winning_point = []
+                            '''
+                            заранее подготавливаем 
+                            '''
+                            for el in open('data/levels/level_1/level_1').readlines():
+                                walls = LoadGame().walls_load(el)  # получаем список координат стен
+                                if not winning_point:
+                                    winning_point = walls
+                                rise = Rise().rise_load(el)  # получаем список координат риса
+                                if rise:
+                                    new_rise = [el1 * 10 for el1 in rise]
+                                    rise_x_y[k] = new_rise
+                                k += 20
                             win = pygame.image.load(
                                 'data/disachievements/images/the_partia_isnt_proud_of_you.png')
                             win = pygame.transform.scale(win, (800, 500))
                             screen.blit(win, (0, 30))
-                            lvl = True
                     else:
                         pygame.time.wait(5000)
                         menushka = 'choice_level'
@@ -267,6 +302,21 @@ if __name__ == '__main__':
                         x_pos = nach_x_pos
                         y_pos = nach_y_pos
                         lvl = False
+                        k = 0
+                        rise_x_y = {}
+                        winning_point = []
+                        '''
+                        заранее подготавливаем 
+                        '''
+                        for el in open('data/levels/level_1/level_1').readlines():
+                            walls = LoadGame().walls_load(el)  # получаем список координат стен
+                            if not winning_point:
+                                winning_point = walls
+                            rise = Rise().rise_load(el)  # получаем список координат риса
+                            if rise:
+                                new_rise = [el1 * 10 for el1 in rise]
+                                rise_x_y[k] = new_rise
+                            k += 20
             '''
             отрисовка количества риса
             '''
