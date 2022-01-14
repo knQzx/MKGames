@@ -101,7 +101,7 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
     if not check_collide(sprite, screen, *collide_groups):
         sprite.x += dx
         sprite.y += dy
-        return {'collide': False, 'sprite_move': True}
+        return {'d_coords': (dx, dy), 'sprite_move': True}
     sprite.rect = prev_rect.copy()
     if sprite.dy == 0:
         sprite.rect.y = int(sprite.y)
@@ -145,8 +145,8 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
     if check_collide(sprite, screen, *collide_groups):
         sprite.rect = prev_rect.copy()
         sprite.x, sprite.y = sprite.rect.x, sprite.rect.y
-        return {'collide': True, 'sprite_move': False}
-    return {'collide': True, 'sprite_move': True}
+        return {'d_coords': (0, 0), 'sprite_move': False}
+    return {'d_coords': (cos(angle) * dist, sin(angle) * dist), 'sprite_move': True}
 
 
 def terminate():  # Function break the program

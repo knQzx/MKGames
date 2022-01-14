@@ -1,29 +1,20 @@
 import pygame
-
-GREEN = (0, 250, 0)
-BLACK = (0, 0, 0)
-RED = (250, 0, 0)
-WHITE = (255, 255, 255)
+import operations
 
 
-class LasersHorizontally(pygame.sprite.Sprite):
+class Lasers(pygame.sprite.Sprite):
     def __init__(self, x, y, game_screen):
         super().__init__()
         self.game_screen = game_screen
-        self.speed = 5
-        # uploading images
-        self.image = pygame.image.load("data/images/Lasers.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (50, 50))
-        self.image.set_colorkey(WHITE)
-        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9,
-                                self.game_screen.tile_size * 0.9)
-        self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
-        self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
-        self.mask.fill()
+        self.image = pygame.transform.scale(operations.load_image('Lasers.png'), (self.game_screen.tile_size * 2.903,
+                                                                                  self.game_screen.tile_size))
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(x, y)
+        self.mask = pygame.mask.from_surface(self.image)
         self.x, self.y = self.rect.x, self.rect.y
 
     def update(self):
-        self.x -= (20 * self.game_screen.tile_size) / self.game_screen.setup.FPS
+        self.x -= (30 * self.game_screen.tile_size) / self.game_screen.setup.FPS
         self.rect.x = int(self.x)
 
 
@@ -31,36 +22,34 @@ class Rockets(pygame.sprite.Sprite):
     def __init__(self, x, y, game_screen):
         super().__init__()
         self.game_screen = game_screen
-        self.speed = 5
-        # uploading images
-        self.image = pygame.image.load("data/images/Rocket.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (50, 50))
-        self.image.set_colorkey(WHITE)
-        self.rect = pygame.Rect(0, 0, self.game_screen.tile_size * 0.9,
-                                self.game_screen.tile_size * 0.9)
-        self.rect = self.rect.move(x * game_screen.tile_size, y * game_screen.tile_size)
-        self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
-        self.mask.fill()
+        self.image = pygame.transform.scale(operations.load_image('Rocket.png'), (self.game_screen.tile_size * 1.897,
+                                                                                  self.game_screen.tile_size))
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(x, y)
+        self.mask = pygame.mask.from_surface(self.image)
         self.x, self.y = self.rect.x, self.rect.y
 
     def update(self):
-        self.x -= (6 * self.game_screen.tile_size) / self.game_screen.setup.FPS
+        self.x -= (15 * self.game_screen.tile_size) / self.game_screen.setup.FPS
         self.rect.x = int(self.x)
 
 
-class Hints(pygame.sprite.Sprite):
+class Hint(pygame.sprite.Sprite):
     def __init__(self, hero, game_screen, future_obj):
-        super().__init__()
+        super().__init__(game_screen.obstacles_group)
         self.future_obj = future_obj
         self.hero = hero
         self.game_screen = game_screen
         self.time = 0
-        # uploading images
-        self.rect.x, self.rect.y = self.hero.rect.x, self.hero.rect.y
+        self.image = pygame.transform.scale(operations.load_image('Warning.png'), (self.game_screen.tile_size,
+                                                                                   self.game_screen.tile_size))
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.x, self.rect.y = self.game_screen.setup.width - self.rect.width, self.hero.rect.y
 
     def update(self):
-        self.rect.x, self.rect.y = self.hero.rect.x, self.hero.rect.y
-        self.time += 1 / self.game_screen.FPS
+        self.rect.y = self.hero.rect.y
+        self.time += 1 / self.game_screen.setup.FPS
         if self.time >= 1:
             self.game_screen.obstacles_group.add(self.future_obj(self.rect.x, self.rect.y, self.game_screen))
-
+            self.kill()
