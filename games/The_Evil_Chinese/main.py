@@ -2,6 +2,7 @@ import os
 import random
 import re
 import time
+import sqlite3
 
 import pygame
 
@@ -254,6 +255,17 @@ if __name__ == '__main__':
                             win = pygame.transform.scale(win, (800, 500))
                             screen.blit(win, (0, 30))
                             lvl = True
+                            start_dir_path = os.getcwd()
+                            os.chdir('../..')
+                            conn = sqlite3.connect("database.sqlite")
+                            cursor = conn.cursor()
+                            coins = cursor.execute("""SELECT Coins FROM User""").fetchone()
+                            coins_now = int(coins[0])
+                            coins_will = str(coins_now + 1)
+                            sql_link = f"""UPDATE User SET Coins={coins_will}"""
+                            cursor.execute(sql_link)
+                            conn.commit()
+                            os.chdir(start_dir_path)
                         else:
                             win = pygame.image.load(
                                 'data/disachievements/images/partiya_ne_gorditsya.png')
