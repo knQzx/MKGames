@@ -59,7 +59,7 @@ if __name__ == '__main__':
     sxr = 30
     screen = pygame.display.set_mode(size)
     # обещание великого правителя
-    # Music().rulers_promise('Обещание выдать миску риса.mp3')
+    Music().rulers_promise('Обещание выдать миску риса.mp3')
     # музыка на фоне
     Music().background_music('Музыка на фон.mp3')
     #
@@ -250,13 +250,13 @@ if __name__ == '__main__':
                     '''
                     if not lvl:
                         if rise_result >= 10:
-                            win = pygame.image.load('data/achievements/images/partia_gorditsya.png')
+                            win = pygame.image.load('data/achievements/images/the_partia_is_proud_of_you.png')
                             win = pygame.transform.scale(win, (800, 500))
                             screen.blit(win, (0, 30))
                             lvl = True
                         else:
                             win = pygame.image.load(
-                                'data/disachievements/images/partiya_ne_gorditsya.png')
+                                'data/disachievements/images/the_partia_isnt_proud_of_you.png')
                             win = pygame.transform.scale(win, (800, 500))
                             screen.blit(win, (0, 30))
                             lvl = True
