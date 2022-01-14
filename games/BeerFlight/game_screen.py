@@ -279,3 +279,4 @@ class GameScreen:  # Screen for game at any level
 
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
+

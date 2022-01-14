@@ -63,3 +63,4 @@ class Hints(pygame.sprite.Sprite):
         self.time += 1 / self.game_screen.FPS
         if self.time >= 1:
             self.game_screen.obstacles_group.add(self.future_obj(self.rect.x, self.rect.y, self.game_screen))
+
