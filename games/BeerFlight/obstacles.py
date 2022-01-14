@@ -6,7 +6,7 @@ RED = (250, 0, 0)
 WHITE = (255, 255, 255)
 
 
-class Lasers_horizontally(pygame.sprite.Sprite):
+class LasersHorizontally(pygame.sprite.Sprite):
     def __init__(self, x, y, game_screen):
         super().__init__()
         self.game_screen = game_screen
@@ -23,7 +23,7 @@ class Lasers_horizontally(pygame.sprite.Sprite):
         self.x, self.y = self.rect.x, self.rect.y
 
     def update(self):
-        self.x -= (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.x -= (20 * self.game_screen.tile_size) / self.game_screen.setup.FPS
         self.rect.x = int(self.x)
 
 
@@ -44,7 +44,7 @@ class Rockets(pygame.sprite.Sprite):
         self.x, self.y = self.rect.x, self.rect.y
 
     def update(self):
-        self.x -= (6 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.x -= (6 * self.game_screen.tile_size) / self.game_screen.setup.FPS
         self.rect.x = int(self.x)
 
 
@@ -55,7 +55,7 @@ class Hints(pygame.sprite.Sprite):
         self.hero = hero
         self.game_screen = game_screen
         self.time = 0
-        # Настройка картинки
+        # uploading images
         self.rect.x, self.rect.y = self.hero.rect.x, self.hero.rect.y
 
     def update(self):
