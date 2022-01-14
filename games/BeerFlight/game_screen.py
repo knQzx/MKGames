@@ -1,4 +1,5 @@
 import json
+import os
 
 import pygame
 import pytmx
@@ -73,6 +74,10 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
             self.game_screen.default_tiles_group
         )
 
+        if not move_data['sprite_move']:
+            self.game_screen.win = False
+            self.game_screen.running = False
+
         self.dy += (5 * self.game_screen.PPM) / self.game_screen.setup.FPS
 
 
@@ -111,7 +116,7 @@ class GameScreen:  # Screen for game at any level
         self.stars_tiles = [6]
         self.boss_triggers = [8]
         self.death_tiles = [4, 9, 14, 11, 12, 13]
-        self.end_tiles = [9, 15]
+        self.end_tiles = [10, 15]
 
         pygame.mixer.music.load(f'data/music/{self.level["music"]}')
         pygame.mixer.music.play(-1)
@@ -154,10 +159,52 @@ class GameScreen:  # Screen for game at any level
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
 
     def check_lasers(self, hero):  # --> check collision with lasers
-        for el in self.death_tiles_group:
-            if pygame.sprite.collide_mask(hero, el):
+        for tile in self.death_tiles_group:
+            if pygame.sprite.collide_mask(hero, tile):
+                self.win = False
                 self.running = False
                 break
+
+    def check_end(self, hero):
+        for tile in self.end_tiles_group:
+            if pygame.sprite.collide_mask(hero, tile):
+                self.win = True
+                self.running = False
+                break
+
+    def check_hit(self, hero, *collide_groups):
+        prev_rect = hero.rect.copy()
+        hero.rect.x += int(hero.dx)
+        if operations.check_collide(hero, self.setup.screen, *collide_groups):
+            changed_rect = hero.rect.copy()
+            hit = True
+            for sign in [-1, 1]:
+                hero.rect.y += int((hero.dx + 5) * sign)
+                if not operations.check_collide(hero, self.setup.screen, *collide_groups):
+                    hit = False
+                hero.rect = changed_rect.copy()
+        else:
+            hit = False
+        hero.rect = prev_rect.copy()
+
+        if hit:
+            self.win = False
+            self.running = False
+
+    def check_stars(self, hero):
+        for tile in self.stars_tiles_group:
+            if pygame.sprite.collide_mask(hero, tile):
+                self.stars += 1
+                tile.kill()
+
+    def update_db(self):
+        with open(os.path.join('data', 'levels', self.name, 'level.json'), 'r') as read_file:
+            data = json.load(read_file)
+        data['completed'] = data['completed'] or self.win
+        if self.win:
+            data['stars'] = max(data['stars'], self.stars)
+        with open(os.path.join('data', 'levels', self.name, 'level.json'), 'w') as write_file:
+            json.dump(data, write_file)
 
     def start(self, setup):
         self.setup = setup
@@ -184,12 +231,16 @@ class GameScreen:  # Screen for game at any level
 
         background = operations.load_image(self.level['background'])
         space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
+
+        self.win = None
+        self.stars = 0
         self.running = True
         while True:
             operations.draw_background(self.setup.screen, background)
             if not self.running:
                 pygame.mixer.music.pause()
-                return self.setup.FinishScreen(self.name, False, 3)
+                self.update_db()
+                return self.setup.FinishScreen(self.name, self.win, self.stars)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     operations.terminate()
@@ -219,6 +270,12 @@ class GameScreen:  # Screen for game at any level
             self.particles_group.draw(self.setup.screen)
 
             hero_group.draw(self.setup.screen)
-            self.check_lasers(hero)
+
+            self.check_lasers(hero)  # Check collision with final game tiles
+            self.check_end(hero)
+            self.check_hit(hero, self.default_tiles_group)
+
+            self.check_stars(hero)  # Check collision with non-final game tiles
+
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
