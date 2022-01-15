@@ -13,7 +13,7 @@ class MyWidget(QMainWindow):
         self.pushButton.clicked.connect(self.run_s2adv)
         self.pushButton_2.clicked.connect(self.run_beer_flight)
         self.pushButton_3.clicked.connect(self.run_tec)
-        self.setWindowTitle('META')
+        self.setWindowTitle('MKGames')
         """
         we upload the user to the database 
         if he is not there yet and change the coin
