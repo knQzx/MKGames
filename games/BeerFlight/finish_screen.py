@@ -37,7 +37,8 @@ class FinishScreen:
                 star_image_rect.x += star_image.get_width() + indent
 
     def set_buttons(self):
-        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'), (100, 100))  # Place play again button
+        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'),
+                                                  (100, 100))  # Place play again button
         new_x = int(self.image.get_width() / 2 + play_again_image.get_rect().width / 2 * 1.5)
         new_y = self.image.get_height() // 2 + play_again_image.get_rect().height
         self.play_again_button = Button(
@@ -46,7 +47,8 @@ class FinishScreen:
         )
         self.buttons_group.add(self.play_again_button)
 
-        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'), (100, 100))  # Place select level button
+        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'),
+                                                    (100, 100))  # Place select level button
         new_x = int(self.image.get_width() / 2 - select_level_image.get_rect().width * 1.5)
         new_y = self.image.get_height() // 2 + select_level_image.get_rect().height
         self.select_level_button = Button(

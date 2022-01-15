@@ -117,10 +117,10 @@ class LevelTitle(pygame.sprite.Sprite):  # --> class of level select screen
         self.rect = self.image.get_rect()
         # set x and y
         self.rect.x, self.rect.y = self.level_screen.setup.width // 2 - self.rect.width // 2 + \
-                                   self.level_screen.setup.width * (
+            self.level_screen.setup.width * (
                                            self.num - self.level_screen.cur_level_num), \
-                                   operations.get_screen_coords(self.level_screen.setup.screen,
-                                                                (0, 0.161))[1]
+            operations.get_screen_coords(self.level_screen.setup.screen,
+                                         (0, 0.161))[1]
         self.x, self.y = self.rect.x, self.rect.y
         # draw
         self.draw()

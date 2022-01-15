@@ -132,4 +132,3 @@ class Level(pygame.sprite.Sprite):
             pygame.Color('green'),
             (self.size[0] // 2 - bar_size[0] // 2, self.size[1] - bar_size[1] * 2, *bar_size)
         )
-

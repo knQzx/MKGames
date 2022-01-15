@@ -29,7 +29,7 @@ def draw_background(screen, image):
         new_image_size = screen.get_width(), 1 / image_ratio / image.get_width()
     image = pygame.transform.scale(image, new_image_size)
     rect = image.get_rect()
-    rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2,\
+    rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2, \
         screen.get_height() // 2 - image.get_height() // 2
     screen.blit(image, rect)
 
@@ -51,7 +51,7 @@ def check_collide(sprite: pygame.sprite.Sprite, current_world,
     return collide
 
 
-def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.Surface, current_world,
+def move_sprite(sprite: pygame.sprite.Sprite, d_coords, current_world,
                 *collide_groups):  # Move sprite with accounting of collisions
     dx, dy = d_coords
     dist = (dx ** 2 + dy ** 2) ** 0.5
@@ -94,7 +94,7 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
                               pi / 2)
             angle = start_angle + d_angle
             sprite.rect.x, sprite.rect.y = int(sprite.x + cos(angle) * dist), \
-                                           int(sprite.y + sin(angle) * dist)
+                int(sprite.y + sin(angle) * dist)
             if collide_perm['prev_result']:
                 collide_perm['prev_ch_d_angle'] = collide_perm['prev_ch_d_angle'] / 2
             else:

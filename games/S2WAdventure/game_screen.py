@@ -68,14 +68,9 @@ class Hero(pygame.sprite.Sprite):
         self.speed = self.speeds[self.current_speed]
 
     def update(self):
-        move_data = operations.move_sprite(
-            self,
-            (self.dx * self.game_screen.tile_size / self.game_screen.setup.FPS,
-             self.dy / self.game_screen.setup.FPS),
-            self.game_screen.setup.screen,
-            self.game_screen.current_world,
-            self.game_screen.default_tiles_group
-        )
+        move_data = operations.move_sprite(self, (self.dx * self.game_screen.tile_size / self.game_screen.setup.FPS,
+                                                  self.dy / self.game_screen.setup.FPS), self.game_screen.current_world,
+                                           self.game_screen.default_tiles_group)
 
         self.distance += move_data['d_coords'][0]
 
@@ -129,7 +124,8 @@ class FinishTitle(pygame.sprite.Sprite):
             (self.size[0] // 2 - bar_size[0] // 2, self.size[1] // 2 + bar_size[1] * 2, *bar_size)
         )
 
-        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'), (100, 100))  # Place play again button
+        play_again_image = pygame.transform.scale(operations.load_image('Play again.png'),
+                                                  (100, 100))  # Place play again button
         new_x = int(self.size[0] / 2 + play_again_image.get_rect().width / 2 * 1.5)
         new_y = self.size[1] // 2 + play_again_image.get_rect().height
         self.play_again_button = Button(
@@ -139,7 +135,8 @@ class FinishTitle(pygame.sprite.Sprite):
             self.game_screen.finish_title_group
         )
 
-        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'), (100, 100))  # Place select level button
+        select_level_image = pygame.transform.scale(operations.load_image('Select level.png'),
+                                                    (100, 100))  # Place select level button
         new_x = int(self.size[0] / 2 - select_level_image.get_rect().width * 1.5)
         new_y = self.size[1] // 2 + select_level_image.get_rect().height
         self.select_level_button = Button(

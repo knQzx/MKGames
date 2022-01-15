@@ -53,9 +53,9 @@ class MyWidget(QMainWindow):
             else:
                 self.pushButton_3.setText('BUY (1 coin)')
         """
-        change defolt button settings
+        change default button settings
         """
-        buttonsettings = '''
+        button_settings = '''
         QPushButton {
             border: 2px solid #0a0a0a;
         }
@@ -64,9 +64,9 @@ class MyWidget(QMainWindow):
         }
         '''
 
-        self.pushButton.setStyleSheet(buttonsettings)
-        self.pushButton_2.setStyleSheet(buttonsettings)
-        self.pushButton_3.setStyleSheet(buttonsettings)
+        self.pushButton.setStyleSheet(button_settings)
+        self.pushButton_2.setStyleSheet(button_settings)
+        self.pushButton_3.setStyleSheet(button_settings)
 
     def run_s2adv(self):
         conn = sqlite3.connect("database.sqlite")
