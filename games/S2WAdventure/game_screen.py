@@ -196,9 +196,10 @@ class GameScreen:
 
         background = operations.load_image(self.level['background'])
         self.running = True
+        win_check = False
         while True:
             # make +1 money if you win
-            if float(self.hero.distance / self.tile_size / self.width * 100) >= 100:
+            if float(self.hero.distance / self.tile_size / self.width * 100) >= 100 and not win_check:
                 start_dir_path = os.getcwd()
                 os.chdir('../..')
                 conn = sqlite3.connect("database.sqlite")
@@ -210,6 +211,7 @@ class GameScreen:
                 cursor.execute(sql_link)
                 conn.commit()
                 os.chdir(start_dir_path)
+                win_check = True
 
             if not self.running:
                 if self.out is not None:
