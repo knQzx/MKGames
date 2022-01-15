@@ -1,6 +1,7 @@
 import os
 import random
 import re
+import time
 import sqlite3
 
 import pygame
@@ -275,6 +276,7 @@ if __name__ == '__main__':
                                 'data/achievements/images/the_partia_is_proud_of_you.png')
                             win = pygame.transform.scale(win, (800, 500))
                             screen.blit(win, (0, 30))
+                            lvl = True
                             # make +1 coin
                             start_dir_path = os.getcwd()
                             os.chdir('../..')
