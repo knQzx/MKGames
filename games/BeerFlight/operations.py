@@ -36,7 +36,7 @@ def draw_background(screen, image):  # --> draw image at screen with accounting 
     if image_ratio > screen_ratio:
         new_image_size = screen.get_height() * image_ratio, screen.get_height()
     else:
-        new_image_size = screen.get_width(), 1 / image_ratio / image.get_width()
+        new_image_size = screen.get_width(), screen.get_width() / image_ratio
     image = pygame.transform.scale(image, new_image_size)
     rect = image.get_rect()
     rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2, \
@@ -65,10 +65,11 @@ def collide_mask_rect(left, right):
 def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface,
                   *collide_groups):  # Check to collide with groups and screen framework
     collide = False
-    if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
-                                    screen.get_width(),
-                                    screen.get_height() - sprite.rect.height * 2)):
-        return True
+    if screen is not None:
+        if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
+                                        screen.get_width(),
+                                        screen.get_height() - sprite.rect.height * 2)):
+            return True
     for collide_group in collide_groups:
         for collide_sprite in collide_group:
             if collide_mask_rect(sprite, collide_sprite):

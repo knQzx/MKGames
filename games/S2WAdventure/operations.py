@@ -20,13 +20,13 @@ def load_image(name, colorkey=None):
     return image
 
 
-def draw_background(screen, image):
+def draw_background(screen, image):  # --> draw image at screen with accounting of display size
     image_ratio = image.get_width() / image.get_height()
     screen_ratio = screen.get_width() / screen.get_height()
     if image_ratio > screen_ratio:
         new_image_size = screen.get_height() * image_ratio, screen.get_height()
     else:
-        new_image_size = screen.get_width(), 1 / image_ratio / image.get_width()
+        new_image_size = screen.get_width(), screen.get_width() / image_ratio
     image = pygame.transform.scale(image, new_image_size)
     rect = image.get_rect()
     rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2, \
