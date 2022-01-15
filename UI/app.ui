@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1527</width>
-    <height>652</height>
+    <width>952</width>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -89,6 +89,9 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="pixmap">
        <pixmap>../images/beer_flight.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -340,7 +343,7 @@ div:last-child {margin-bottom: 0;}</string>
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../images/logo_s2w.jpg</pixmap>
+       <pixmap>../images/logo_s2w.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
