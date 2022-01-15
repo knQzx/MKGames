@@ -85,7 +85,8 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
                                     self.image.get_width(), self.image.get_height())
             self.mask = pygame.mask.from_surface(self.image)
         if self.sheet_state == 0:
-            self.rect = pygame.Rect(self.rect.x, self.rect.y,
+            self.rect = pygame.Rect(self.rect.x - (self.game_screen.tile_size * 0.9 - self.rect.width),
+                                    self.rect.y - (self.game_screen.tile_size * 0.9 - self.rect.height),
                                     self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
             self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
             self.mask.fill()
