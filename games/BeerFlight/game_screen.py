@@ -1,5 +1,6 @@
 import json
 import os
+import sqlite3
 
 import pygame
 import pytmx
@@ -262,11 +263,21 @@ class GameScreen:  # Screen for game at any level
             if not self.running:
                 pygame.mixer.music.pause()
                 self.update_db()
+                if self.win:
+                    start_dir_path = os.getcwd()
+                    os.chdir('../..')
+                    conn = sqlite3.connect("database.sqlite")
+                    cursor = conn.cursor()
+                    coins = cursor.execute("""SELECT Coins FROM User""").fetchone()
+                    coins_now = int(coins[0])
+                    coins_will = str(coins_now + 1)
+                    sql_link = f"""UPDATE User SET Coins={coins_will}"""
+                    cursor.execute(sql_link)
+                    conn.commit()
+                    os.chdir(start_dir_path)
                 return self.setup.FinishScreen(self.name, self.win, self.stars)
-
             if self.to_last_trigger_update <= 0:
                 self.check_triggers()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     operations.terminate()
@@ -310,4 +321,3 @@ class GameScreen:  # Screen for game at any level
 
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
-

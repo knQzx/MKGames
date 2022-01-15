@@ -1,3 +1,6 @@
+import os
+import sqlite3
+
 import pygame
 import pytmx
 import json
@@ -234,6 +237,19 @@ class GameScreen:
         background = operations.load_image(self.level['background'])
         self.running = True
         while True:
+            # make +1 money if you win
+            if float(self.hero.distance / self.tile_size / self.width * 100) >= 100:
+                start_dir_path = os.getcwd()
+                os.chdir('../..')
+                conn = sqlite3.connect("database.sqlite")
+                cursor = conn.cursor()
+                coins = cursor.execute("""SELECT Coins FROM User""").fetchone()
+                coins_now = int(coins[0])
+                coins_will = str(coins_now + 1)
+                sql_link = f"""UPDATE User SET Coins={coins_will}"""
+                cursor.execute(sql_link)
+                conn.commit()
+                os.chdir(start_dir_path)
             space_clicked = False
             for event in pygame.event.get():
                 if not self.running:
