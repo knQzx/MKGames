@@ -76,13 +76,19 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
             self.game_screen.default_tiles_group
         )
 
-        if not move_data['sprite_move']:
-            self.game_screen.win = False
-            self.game_screen.running = False
-
         self.game_screen.to_last_trigger_update -= move_data['d_coords'][0]
 
-        self.dy += (5 * self.game_screen.ppm) / self.game_screen.setup.FPS
+        self.dy += (self.game_screen.G * self.game_screen.ppm) / self.game_screen.setup.FPS
+
+        if self.sheet_state == 1:
+            self.rect = pygame.Rect(self.rect.x, self.rect.y,
+                                    self.image.get_width(), self.image.get_height())
+            self.mask = pygame.mask.from_surface(self.image)
+        if self.sheet_state == 0:
+            self.rect = pygame.Rect(self.rect.x, self.rect.y,
+                                    self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
+            self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
+            self.mask.fill()
 
 
 class Particle(pygame.sprite.Sprite):
@@ -189,7 +195,7 @@ class GameScreen:  # Screen for game at any level
             changed_rect = hero.rect.copy()
             hit = True
             for sign in [-1, 1]:
-                hero.rect.y += int((hero.dx + 5) * sign)
+                hero.rect.y += int((hero.dx + self.tile_size * 0.2) * sign)
                 if not operations.check_collide(hero, self.setup.screen, *collide_groups):
                     hit = False
                 hero.rect = changed_rect.copy()
@@ -229,6 +235,8 @@ class GameScreen:  # Screen for game at any level
         self.load_level()
         self.tile_size = self.setup.height // self.map.height
         self.ppm = self.tile_size / 2
+        self.G = 4
+        self.JETPACK_STRENGTH = 7
 
         self.triggers_to_obstacle = {
             7: obstacles.Rockets,
@@ -285,7 +293,7 @@ class GameScreen:  # Screen for game at any level
                     if event.key == pygame.K_SPACE:
                         space_clicked = not space_clicked
             if space_clicked:
-                self.hero.dy -= self.ppm * 8 / self.setup.FPS
+                self.hero.dy -= self.ppm * self.JETPACK_STRENGTH / self.setup.FPS
                 self.hero.sheet_state = 1
                 self.particles_group.add(Particle(
                     pygame.transform.scale(operations.load_image('Smoke.png'),
