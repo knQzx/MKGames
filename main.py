@@ -106,17 +106,33 @@ class MyWidget(QMainWindow):
                 s = cursor.execute("""SELECT * FROM User""").fetchone()
                 self.label_8.setText(f'{s[0]}')
                 self.label_8.setStyleSheet("QLabel { font-size:36pt; color:#fce94f; } ")
-            elif int(s[0]) - 1 < 0:
-                msg = QMessageBox()
-                msg.setWindowTitle("Не выполнена покупка игры")
-                msg.setText("Не выполнена покупка игры S2WAdventure из-за недостатка средств")
-                msg.exec_()
             elif 'S2ADV' in s[4]:
                 ex.close()
                 os.chdir('games/S2WAdventure')
                 os.system('python3 main.py')
                 os.chdir('../../')
                 ex.show()
+                """
+                we upload the user to the database 
+                if he is not there yet and change the coin
+                """
+                conn = sqlite3.connect("database.sqlite")
+                cursor = conn.cursor()
+                cursor.execute("""SELECT * FROM User""")
+                if cursor.fetchone() is None:
+                    cursor.execute("""INSERT INTO User
+                                              VALUES ('1', '0', '0',
+                                              '0', '-')"""
+                                   )
+                    conn.commit()
+                s = cursor.execute("""SELECT * FROM User""").fetchone()
+                self.label_8.setText(f'{s[0]}')
+                self.label_8.setStyleSheet("QLabel { font-size:36pt; color:#fce94f; } ")
+            elif int(s[0]) - 1 < 0:
+                msg = QMessageBox()
+                msg.setWindowTitle("Не выполнена покупка игры")
+                msg.setText("Не выполнена покупка игры S2WAdventure из-за недостатка средств")
+                msg.exec_()
 
     def run_beer_flight(self):
         conn = sqlite3.connect("database.sqlite")
@@ -156,17 +172,33 @@ class MyWidget(QMainWindow):
                 s = cursor.execute("""SELECT * FROM User""").fetchone()
                 self.label_8.setText(f'{s[0]}')
                 self.label_8.setStyleSheet("QLabel { font-size:36pt; color:#fce94f; } ")
-            elif int(s[0]) - 1 < 0:
-                msg = QMessageBox()
-                msg.setWindowTitle("Не выполнена покупка игры")
-                msg.setText("Не выполнена покупка игры BeerFlight из-за недостатка средств")
-                msg.exec_()
             elif 'BeerFlight' in s[4]:
                 ex.close()
                 os.chdir('games/BeerFlight')
                 os.system('python3 main.py')
                 os.chdir('../../')
                 ex.show()
+                """
+                we upload the user to the database 
+                if he is not there yet and change the coin
+                """
+                conn = sqlite3.connect("database.sqlite")
+                cursor = conn.cursor()
+                cursor.execute("""SELECT * FROM User""")
+                if cursor.fetchone() is None:
+                    cursor.execute("""INSERT INTO User
+                                              VALUES ('1', '0', '0',
+                                              '0', '-')"""
+                                   )
+                    conn.commit()
+                s = cursor.execute("""SELECT * FROM User""").fetchone()
+                self.label_8.setText(f'{s[0]}')
+                self.label_8.setStyleSheet("QLabel { font-size:36pt; color:#fce94f; } ")
+            elif int(s[0]) - 1 < 0:
+                msg = QMessageBox()
+                msg.setWindowTitle("Не выполнена покупка игры")
+                msg.setText("Не выполнена покупка игры BeerFlight из-за недостатка средств")
+                msg.exec_()
 
     def run_tec(self):
         conn = sqlite3.connect("database.sqlite")
@@ -206,17 +238,33 @@ class MyWidget(QMainWindow):
                 s = cursor.execute("""SELECT * FROM User""").fetchone()
                 self.label_8.setText(f'{s[0]}')
                 self.label_8.setStyleSheet("QLabel { font-size:36pt; color:#fce94f; } ")
-            elif int(s[0]) - 1 < 0:
-                msg = QMessageBox()
-                msg.setWindowTitle("Не выполнена покупка игры")
-                msg.setText("Не выполнена покупка игры The_Evil_Chinese из-за недостатка средств")
-                msg.exec_()
             elif 'The_Evil_Chinese' in s[4]:
                 ex.close()
                 os.chdir('games/The_Evil_Chinese')
                 os.system('python3 main.py')
                 os.chdir('../../')
                 ex.show()
+                """
+                we upload the user to the database 
+                if he is not there yet and change the coin
+                """
+                conn = sqlite3.connect("database.sqlite")
+                cursor = conn.cursor()
+                cursor.execute("""SELECT * FROM User""")
+                if cursor.fetchone() is None:
+                    cursor.execute("""INSERT INTO User
+                                              VALUES ('1', '0', '0',
+                                              '0', '-')"""
+                                   )
+                    conn.commit()
+                s = cursor.execute("""SELECT * FROM User""").fetchone()
+                self.label_8.setText(f'{s[0]}')
+                self.label_8.setStyleSheet("QLabel { font-size:36pt; color:#fce94f; } ")
+            elif int(s[0]) - 1 < 0:
+                msg = QMessageBox()
+                msg.setWindowTitle("Не выполнена покупка игры")
+                msg.setText("Не выполнена покупка игры The_Evil_Chinese из-за недостатка средств")
+                msg.exec_()
 
 
 if __name__ == '__main__':
