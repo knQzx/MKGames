@@ -36,11 +36,11 @@ def draw_background(screen, image):  # --> draw image at screen with accounting 
     if image_ratio > screen_ratio:
         new_image_size = screen.get_height() * image_ratio, screen.get_height()
     else:
-        new_image_size = screen.get_width(), 1 / image_ratio / image.get_width()
+        new_image_size = screen.get_width(), screen.get_width() / image_ratio
     image = pygame.transform.scale(image, new_image_size)
     rect = image.get_rect()
     rect.x, rect.y = screen.get_width() // 2 - image.get_width() // 2, \
-                     screen.get_height() // 2 - image.get_height() // 2
+        screen.get_height() // 2 - image.get_height() // 2
     screen.blit(image, rect)
 
 
@@ -65,10 +65,11 @@ def collide_mask_rect(left, right):
 def check_collide(sprite: pygame.sprite.Sprite, screen: pygame.surface.Surface,
                   *collide_groups):  # Check to collide with groups and screen framework
     collide = False
-    if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
-                                    screen.get_width(),
-                                    screen.get_height() - sprite.rect.height * 2)):
-        return True
+    if screen is not None:
+        if not sprite.rect.colliderect((0, 0 + sprite.rect.height,
+                                        screen.get_width(),
+                                        screen.get_height() - sprite.rect.height * 2)):
+            return True
     for collide_group in collide_groups:
         for collide_sprite in collide_group:
             if collide_mask_rect(sprite, collide_sprite):
@@ -122,7 +123,7 @@ def move_sprite(sprite: pygame.sprite.Sprite, d_coords, screen: pygame.surface.S
                               pi / 2)
             angle = start_angle + d_angle
             sprite.rect.x, sprite.rect.y = int(sprite.x + cos(angle) * dist), \
-                                           int(sprite.y + sin(angle) * dist)
+                int(sprite.y + sin(angle) * dist)
             if collide_perm['prev_result']:
                 collide_perm['prev_ch_d_angle'] = collide_perm['prev_ch_d_angle'] / 2
             else:

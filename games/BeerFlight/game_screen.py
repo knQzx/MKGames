@@ -195,9 +195,9 @@ class GameScreen:  # Screen for game at any level
         if operations.check_collide(hero, self.setup.screen, *collide_groups):
             changed_rect = hero.rect.copy()
             hit = True
-            for sign in [-1, 1]:
-                hero.rect.y += int((hero.dx + self.tile_size * 0.2) * sign)
-                if not operations.check_collide(hero, self.setup.screen, *collide_groups):
+            for sign in [-1, 1, -2, 2]:
+                hero.rect.y += int((hero.dx + self.tile_size * 0.2 * abs(sign)) * sign)
+                if not operations.check_collide(hero, None, *collide_groups):
                     hit = False
                 hero.rect = changed_rect.copy()
         else:
