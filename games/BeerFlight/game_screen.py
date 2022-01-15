@@ -6,6 +6,7 @@ import pygame
 import pytmx
 
 import operations
+import obstacles
 
 
 class Camera:  # Camera whose apply objects with main sprite
@@ -79,7 +80,9 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
             self.game_screen.win = False
             self.game_screen.running = False
 
-        self.dy += (5 * self.game_screen.PPM) / self.game_screen.setup.FPS
+        self.game_screen.to_last_trigger_update -= move_data['d_coords'][0]
+
+        self.dy += (5 * self.game_screen.ppm) / self.game_screen.setup.FPS
 
 
 class Particle(pygame.sprite.Sprite):
@@ -115,7 +118,7 @@ class GameScreen:  # Screen for game at any level
         self.width = self.map.width
         self.default_tiles = [1, 2, 3]
         self.stars_tiles = [6]
-        self.boss_triggers = [8]
+        self.triggers = [7, 8]
         self.death_tiles = [4, 9, 14, 11, 12, 13]
         self.end_tiles = [10, 15]
 
@@ -127,34 +130,33 @@ class GameScreen:  # Screen for game at any level
             for x in range(self.width):
                 tile = pygame.sprite.Sprite()  # Set tiles
                 image = self.map.get_tile_image(x, y, 0)
-                if image is None:
-                    continue
-                tile.image = pygame.transform.scale(image, (self.tile_size, self.tile_size))
-                tile.mask = pygame.mask.from_surface(tile.image)
-                tile.rect = tile.image.get_rect()
-                tile.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
-                tile_id = self.get_tile_id((x, y), 0)
-                if tile_id in self.default_tiles:
-                    self.default_tiles_group.add(tile)
-                if tile_id in self.stars_tiles:
-                    self.stars_tiles_group.add(tile)
-                if tile_id in self.death_tiles:
-                    self.death_tiles_group.add(tile)
-                if tile_id in self.end_tiles:
-                    self.end_tiles_group.add(tile)
-                self.tiles_group.add(tile)
+                if image is not None:
+                    tile.image = pygame.transform.scale(image, (self.tile_size, self.tile_size))
+                    tile.mask = pygame.mask.from_surface(tile.image)
+                    tile.rect = tile.image.get_rect()
+                    tile.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
+                    tile_id = self.get_tile_id((x, y), 0)
+                    if tile_id in self.default_tiles:
+                        self.default_tiles_group.add(tile)
+                    if tile_id in self.stars_tiles:
+                        self.stars_tiles_group.add(tile)
+                    if tile_id in self.death_tiles:
+                        self.death_tiles_group.add(tile)
+                    if tile_id in self.end_tiles:
+                        self.end_tiles_group.add(tile)
+                    self.tiles_group.add(tile)
 
                 trigger = pygame.sprite.Sprite()  # Set triggers
-                image = self.map.get_tile_image(x, y, 0)
-                if image is None:
-                    continue
-                trigger.image = pygame.transform.scale(image, (self.tile_size, self.tile_size))
-                trigger.mask = pygame.mask.from_surface(tile.image)
-                trigger.rect = tile.image.get_rect()
-                trigger.rect.x, tile.rect.y = x * self.tile_size, y * self.tile_size
-                trigger_id = self.get_tile_id((x, y), 0)
-                if trigger_id in self.boss_triggers:
-                    self.triggers_group.add(trigger)
+                image = self.map.get_tile_image(x, y, 1)
+                if image is not None:
+                    trigger.image = pygame.transform.scale(image, (self.tile_size, self.tile_size))
+                    trigger.mask = pygame.mask.from_surface(trigger.image)
+                    trigger.rect = trigger.image.get_rect()
+                    trigger.rect.x, trigger.rect.y = x * self.tile_size, y * self.tile_size
+                    trigger_id = self.get_tile_id((x, y), 1)
+                    if trigger_id in self.triggers:
+                        trigger.trigger_id = trigger_id
+                        self.triggers_group.add(trigger)
 
     def get_tile_id(self, position, layer):  # Return id of tile at position
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
@@ -170,6 +172,13 @@ class GameScreen:  # Screen for game at any level
         for tile in self.end_tiles_group:
             if pygame.sprite.collide_mask(hero, tile):
                 self.win = True
+                self.running = False
+                break
+
+    def check_obstacles(self, hero):
+        for obstacle in self.obstacles_group:
+            if pygame.sprite.collide_mask(hero, obstacle):
+                self.win = False
                 self.running = False
                 break
 
@@ -198,6 +207,13 @@ class GameScreen:  # Screen for game at any level
                 self.stars += 1
                 tile.kill()
 
+    def check_triggers(self):
+        for trigger in self.triggers_group:
+            if pygame.sprite.collide_rect(self.hero, trigger):
+                obstacles.Hint(self.hero, self, self.triggers_to_obstacle[trigger.trigger_id])
+                self.to_last_trigger_update = self.tile_size * 2
+                break
+
     def update_db(self):
         with open(os.path.join('data', 'levels', self.name, 'level.json'), 'r') as read_file:
             data = json.load(read_file)
@@ -212,7 +228,12 @@ class GameScreen:  # Screen for game at any level
 
         self.load_level()
         self.tile_size = self.setup.height // self.map.height
-        self.PPM = self.tile_size / 2
+        self.ppm = self.tile_size / 2
+
+        self.triggers_to_obstacle = {
+            7: obstacles.Rockets,
+            8: obstacles.Lasers
+        }
 
         self.tiles_group = pygame.sprite.Group()
         self.default_tiles_group = pygame.sprite.Group()
@@ -224,11 +245,13 @@ class GameScreen:  # Screen for game at any level
 
         camera = Camera()
 
-        hero = Hero(0, self.map.height - 1, self)
-        hero_group = pygame.sprite.Group()
-        hero_group.add(hero)
+        self.hero = Hero(0, self.map.height - 1, self)
+        self.hero_group = pygame.sprite.Group()
+        self.hero_group.add(self.hero)
 
         self.particles_group = pygame.sprite.Group()
+        self.obstacles_group = pygame.sprite.Group()
+        self.to_last_trigger_update = 0
 
         background = operations.load_image(self.level['background'])
         space_clicked = pygame.key.get_pressed()[pygame.K_SPACE]
@@ -237,7 +260,6 @@ class GameScreen:  # Screen for game at any level
         self.stars = 0
         self.running = True
         while True:
-            operations.draw_background(self.setup.screen, background)
             if not self.running:
                 pygame.mixer.music.pause()
                 self.update_db()
@@ -254,6 +276,8 @@ class GameScreen:  # Screen for game at any level
                     conn.commit()
                     os.chdir(start_dir_path)
                 return self.setup.FinishScreen(self.name, self.win, self.stars)
+            if self.to_last_trigger_update <= 0:
+                self.check_triggers()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     operations.terminate()
@@ -261,34 +285,39 @@ class GameScreen:  # Screen for game at any level
                     if event.key == pygame.K_SPACE:
                         space_clicked = not space_clicked
             if space_clicked:
-                hero.dy -= self.PPM * 8 / self.setup.FPS
-                hero.sheet_state = 1
+                self.hero.dy -= self.ppm * 8 / self.setup.FPS
+                self.hero.sheet_state = 1
                 self.particles_group.add(Particle(
                     pygame.transform.scale(operations.load_image('Smoke.png'),
                                            (self.tile_size * 0.2, self.tile_size * 0.2)),
-                    hero.rect.x + self.tile_size * 0.4, hero.rect.y + self.tile_size * 0.4,
+                    self.hero.rect.x + self.tile_size * 0.4, self.hero.rect.y + self.tile_size * 0.4,
                     self
                 ))
-            hero.update()
-            camera.update(hero, self)
+            self.hero.update()
+            camera.update(self.hero, self)
             for tile in self.tiles_group:
                 camera.apply(tile)
             for particle in self.particles_group:
                 camera.apply(particle)
             for trigger in self.triggers_group:
                 camera.apply(trigger)
+            operations.draw_background(self.setup.screen, background)
             camera.draw_group(self.tiles_group, self.setup.screen)
 
             self.particles_group.update()
             self.particles_group.draw(self.setup.screen)
 
-            hero_group.draw(self.setup.screen)
+            self.obstacles_group.update()
+            self.obstacles_group.draw(self.setup.screen)
 
-            self.check_lasers(hero)  # Check collision with final game tiles
-            self.check_end(hero)
-            self.check_hit(hero, self.default_tiles_group)
+            self.hero_group.draw(self.setup.screen)
 
-            self.check_stars(hero)  # Check collision with non-final game tiles
+            self.check_lasers(self.hero)  # Check collision with final game tiles
+            self.check_end(self.hero)
+            self.check_obstacles(self.hero)
+            self.check_hit(self.hero, self.default_tiles_group)
+
+            self.check_stars(self.hero)  # Check collision with non-final game tiles
 
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
