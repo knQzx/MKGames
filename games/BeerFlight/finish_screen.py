@@ -83,7 +83,7 @@ class FinishScreen:
         self.set_buttons()
 
         self.screen_out = None
-        while self.screen_out is not None:
+        while self.screen_out is None:
             self.setup.screen.fill(pygame.Color('blue'))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
