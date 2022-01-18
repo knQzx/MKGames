@@ -11,10 +11,7 @@ class FinishScreen:
     def draw(self):
         font = pygame.font.Font(None, 100)  # Draw win state
         font.set_bold(True)
-        if self.win:
-            text_str = 'Completed'
-        else:
-            text_str = 'Lose'
+        text_str = 'Completed' if self.win else 'Lose'
         text = font.render(text_str, True, pygame.Color('yellow'))
         text_rect = text.get_rect()
         text_rect.x = self.image.get_width() // 2 - text.get_width() // 2
@@ -50,25 +47,29 @@ class FinishScreen:
         select_level_image = pygame.transform.scale(operations.load_image('Select level.png'),
                                                     (100, 100))  # Place select level button
         new_x = int(self.image.get_width() / 2 - select_level_image.get_rect().width * 1.5)
-        new_y = self.image.get_height() // 2 + select_level_image.get_rect().height
+        new_y = int(self.image.get_height() // 2 + select_level_image.get_rect().height)
         self.select_level_button = Button(
             select_level_image,
             (new_x, new_y)
         )
         self.buttons_group.add(self.select_level_button)
 
-    def check_click(self, pos):
+    def check_click(self, pos: list):
         if self.select_level_button.rect.collidepoint(*pos):
             self.screen_out = self.setup.LevelScreen()
         if self.play_again_button.rect.collidepoint(*pos):
             self.screen_out = self.setup.GameScreen(self.level_name)
 
     def set_music(self):
-        if self.win:
-            pygame.mixer.music.load(f'data/music/Win.mp3')
-        else:
-            pygame.mixer.music.load(f'data/music/Lose.mp3')
-        pygame.mixer.music.play(1)
+        try:
+            if self.win:
+                pygame.mixer.music.load(f'data/music/Win.mp3')
+            else:
+                pygame.mixer.music.load(f'data/music/Lose.mp3')
+            pygame.mixer.music.play(1)
+        except pygame.error:
+            print('Music load failed')
+            operations.terminate()
 
     def start(self, setup):
         self.setup = setup
@@ -82,24 +83,23 @@ class FinishScreen:
         self.set_buttons()
 
         self.screen_out = None
-        while True:
+        while self.screen_out is not None:
             self.setup.screen.fill(pygame.Color('blue'))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     operations.terminate()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.check_click(event.pos)
-            if self.screen_out is not None:
-                pygame.mixer.music.pause()
-                return self.screen_out
             self.setup.screen.blit(self.image, self.image.get_rect())
             self.buttons_group.draw(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
+        pygame.mixer.music.pause()
+        return self.screen_out
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, image, pos):
+    def __init__(self, image: pygame.Surface, pos: list):
         super().__init__()
         self.image = image
         self.pos = pos
