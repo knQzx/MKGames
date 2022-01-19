@@ -10,9 +10,6 @@ from music_load import Music  # импорт музыки
 
 
 class LoadGame:
-    def __init__(self):
-        pass
-
     def walls_load(self, walls):
         return [m.start() for m in re.finditer('q', walls.rstrip())]
 
@@ -21,17 +18,11 @@ class LoadGame:
 
 
 class Rise:
-    def __init__(self):
-        pass
-
     def rise_load(self, rise):
         return [m.start() for m in re.finditer('r', rise.rstrip())]
 
 
 class Player:
-    def __init__(self):
-        pass
-
     def player_load(self, player):
         return [m.start() for m in re.finditer('x', player.rstrip())]
 
