@@ -12,14 +12,19 @@ class LevelScreen:  # --> screen for select level
         self.levels_group = pygame.sprite.Group()
         self.buttons_group = pygame.sprite.Group()  # The group will store the sprites of the buttons
         self.cur_level_num = 0  # Selected level select screen
-        with open('data/levels/levels.json', 'r') as read_file:  # --> import levels
-            self.levels = json.load(read_file)
+        try:
+            with open('data/levels/levels.json', 'r') as read_file:  # --> import levels
+                self.levels = json.load(read_file)
+        except FileNotFoundError:
+            print('Json file not found')
+            operations.terminate()
         self.add_levels()
 
         self.set_level_change_buttons()
         # load background image
         background = operations.load_image('Beer.png')
-        while True:
+        level_select = None
+        while level_select is None:
             # draw background image
             operations.draw_background(self.setup.screen, background)
             for event in pygame.event.get():
@@ -35,7 +40,7 @@ class LevelScreen:  # --> screen for select level
                     for level_sprite in self.levels_group:
                         if level_sprite.num == self.cur_level_num:
                             if level_sprite.play_button.rect.collidepoint(*event.pos):
-                                return self.setup.GameScreen(level_sprite.level['name'])
+                                level_select = self.setup.GameScreen(level_sprite.level['name'])
             # update our levels group
             self.levels_group.update()
             # draw setup.screen
@@ -46,6 +51,7 @@ class LevelScreen:  # --> screen for select level
             self.buttons_group.draw(self.setup.screen)
             pygame.display.flip()
             setup.clock.tick(setup.FPS)
+        return level_select
 
     def add_levels(self):  # --> function add level selection screen
         # here we count the levels

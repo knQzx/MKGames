@@ -18,7 +18,7 @@ class Camera:  # Camera whose apply objects with main sprite
         obj.rect.x += self.dx
 
     def update(self, target: pygame.sprite.Sprite, game_screen):
-        self.dx = -(target.rect.x + target.rect.w // 2 - game_screen.setup.width // 4)
+        self.dx = -(target.rect.x + target.rect.width - game_screen.setup.width // 4)
         target.rect.x += self.dx
         target.x += self.dx
 
@@ -80,16 +80,21 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
 
         self.dy += (self.game_screen.G * self.game_screen.ppm) / self.game_screen.setup.FPS
 
+        prev_rect = self.rect.copy()
         if self.sheet_state == 1:
             self.rect = pygame.Rect(self.rect.x, self.rect.y,
-                                    self.image.get_width(), self.image.get_height())
-            self.mask = pygame.mask.from_surface(self.image)
+                                    self.image.get_bounding_rect().width, self.image.get_bounding_rect().height)
+
+            self.image = self.image.subsurface(self.image.get_bounding_rect())
         if self.sheet_state == 0:
-            self.rect = pygame.Rect(self.rect.x - (self.game_screen.tile_size * 0.9 - self.rect.width),
-                                    self.rect.y - (self.game_screen.tile_size * 0.9 - self.rect.height),
+            self.rect = pygame.Rect(self.rect.x, self.rect.y,
                                     self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
-            self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
-            self.mask.fill()
+        self.rect = self.rect.move(prev_rect.width - self.rect.width, prev_rect.height - self.rect.height)
+        self.x += prev_rect.width - self.rect.width
+        self.y += prev_rect.height - self.rect.height
+
+        self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
+        self.mask.fill()
 
 
 class Particle(pygame.sprite.Sprite):
@@ -203,7 +208,7 @@ class GameScreen:  # Screen for game at any level
         if operations.check_collide(hero, self.setup.screen, *collide_groups):
             changed_rect = hero.rect.copy()
             hit = True
-            for sign in [-1, 1, -2, 2]:
+            for sign in [0, -1, 1]:
                 hero.rect.y += int((hero.dx + self.tile_size * 0.2 * abs(sign)) * sign)
                 if not operations.check_collide(hero, None, *collide_groups):
                     hit = False
@@ -295,8 +300,7 @@ class GameScreen:  # Screen for game at any level
                 self.particles_group.add(Particle(
                     pygame.transform.scale(operations.load_image('Smoke.png'),
                                            (self.tile_size * 0.2, self.tile_size * 0.2)),
-                    self.hero.rect.x + self.tile_size * 0.4, self.hero.rect.y + self.tile_size * 0.4,
-                    self
+                    self.hero.rect.x, self.hero.rect.y + self.tile_size * 0.4, self
                 ))
             self.hero.update()
             camera.update(self.hero, self)
