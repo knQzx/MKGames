@@ -49,8 +49,11 @@ class LevelScreen:  # --> screen for select level
             self.buttons_group.update()
             # draw setup.screen
             self.buttons_group.draw(self.setup.screen)
+
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
         return level_select
 
     def add_levels(self):  # --> function add level selection screen

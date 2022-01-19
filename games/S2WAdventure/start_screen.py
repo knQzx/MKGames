@@ -41,8 +41,11 @@ class StartScreen:
             self.levels_group.draw(setup.screen)
             self.draw_title(self.setup.screen)
             self.draw_hint(self.setup.screen)
+
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
 
     def draw_hint(self, screen):
         text = ['Change world: "E"', 'Accelerate: "W"']

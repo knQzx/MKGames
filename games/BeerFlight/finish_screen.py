@@ -92,8 +92,11 @@ class FinishScreen:
                     self.check_click(event.pos)
             self.setup.screen.blit(self.image, self.image.get_rect())
             self.buttons_group.draw(self.setup.screen)
+
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
         pygame.mixer.music.pause()
         return self.screen_out
 

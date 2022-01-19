@@ -328,8 +328,10 @@ class GameScreen:  # Screen for game at any level
 
             self.check_stars(self.hero)  # Check collision with non-final game tiles
 
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
 
         # Finish game processing
         pygame.mixer.music.pause()

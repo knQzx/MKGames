@@ -17,7 +17,7 @@ class Setup:
         pygame.display.set_caption('S2WAdventure')
 
         self.clock = pygame.time.Clock()
-        self.FPS = 60
+        self.set_fps()
 
         self.operations = operations
         self.StartScreen = StartScreen
@@ -26,6 +26,14 @@ class Setup:
         self.state = self.StartScreen()
         while True:
             self.state = self.state.start(self)
+
+    def set_fps(self):
+        self.FPS = self.clock.get_fps() if self.clock.get_fps() else 100000
+
+        font = pygame.font.Font(None, 32)
+        font.set_bold(True)
+        fps_text = font.render(str(int(self.FPS)), True, pygame.color.Color('green'))
+        self.screen.blit(fps_text, fps_text.get_rect())
 
 
 if __name__ == '__main__':

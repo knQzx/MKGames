@@ -279,8 +279,10 @@ class GameScreen:
                     self.hero.distance = self.tile_size * self.width
                     self.finish_game()
 
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(self.setup.FPS)
 
     def load_level(self):
         with open(f'data/levels/{self.name}/level.json') as read_file:
