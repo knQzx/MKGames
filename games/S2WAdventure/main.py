@@ -19,13 +19,13 @@ class Setup:
         self.clock = pygame.time.Clock()
         self.set_fps()
 
-        self.operations = operations
         self.StartScreen = StartScreen
         self.GameScreen = GameScreen
 
         self.state = self.StartScreen()
-        while True:
+        while self.state is not None:
             self.state = self.state.start(self)
+        operations.terminate()
 
     def set_fps(self):
         self.FPS = self.clock.get_fps() if self.clock.get_fps() else 100000

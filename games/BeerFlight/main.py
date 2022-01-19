@@ -3,6 +3,7 @@ import pygame
 from finish_screen import FinishScreen
 from game_screen import GameScreen
 from level_screen import LevelScreen
+import operations
 
 
 class Setup:  # --> screen loop and program data
@@ -26,8 +27,9 @@ class Setup:  # --> screen loop and program data
         self.FinishScreen = FinishScreen
 
         self.state = self.LevelScreen()  # Screen loop
-        while True:
+        while self.state is not None:
             self.state = self.state.start(self)
+        operations.terminate()
 
     def set_fps(self):
         self.FPS = self.clock.get_fps() if self.clock.get_fps() else 100000
