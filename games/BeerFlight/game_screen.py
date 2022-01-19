@@ -14,15 +14,15 @@ class Camera:  # Camera whose apply objects with main sprite
         self.dx = 0
         self.dy = 0
 
-    def apply(self, obj):
+    def apply(self, obj: pygame.sprite.Sprite):
         obj.rect.x += self.dx
 
-    def update(self, target, game_screen):
-        self.dx = -(target.rect.x + target.rect.w // 2 - game_screen.setup.width // 4)
+    def update(self, target: pygame.sprite.Sprite, game_screen):
+        self.dx = -(target.rect.x + target.rect.width - game_screen.setup.width // 4)
         target.rect.x += self.dx
         target.x += self.dx
 
-    def draw_group(self, group, screen):
+    def draw_group(self, group: pygame.sprite.Group, screen: pygame.Surface):
         draw_group = pygame.sprite.Group()
         for sprite in group:
             if not (sprite.rect.x + sprite.rect.w <= 0 or sprite.rect.x >= screen.get_width() or
@@ -32,7 +32,7 @@ class Camera:  # Camera whose apply objects with main sprite
 
 
 class Hero(pygame.sprite.Sprite):  # Sprite of main hero
-    def __init__(self, x, y, game_screen):
+    def __init__(self, x: int, y: int, game_screen):
         super().__init__()
         self.game_screen = game_screen
         self.ticks_to_change = 10
@@ -52,7 +52,7 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
 
         self.dx, self.dy = 5, 0
 
-    def cut_sheet(self, sheet, columns, rows):
+    def cut_sheet(self, sheet: pygame.Surface, columns: int, rows: int):
         frames = []
         rect = pygame.Rect(0, 0, sheet.get_width() // columns,
                            sheet.get_height() // rows)
@@ -80,20 +80,25 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
 
         self.dy += (self.game_screen.G * self.game_screen.ppm) / self.game_screen.setup.FPS
 
+        prev_rect = self.rect.copy()
         if self.sheet_state == 1:
             self.rect = pygame.Rect(self.rect.x, self.rect.y,
-                                    self.image.get_width(), self.image.get_height())
-            self.mask = pygame.mask.from_surface(self.image)
+                                    self.image.get_bounding_rect().width, self.image.get_bounding_rect().height)
+
+            self.image = self.image.subsurface(self.image.get_bounding_rect())
         if self.sheet_state == 0:
-            self.rect = pygame.Rect(self.rect.x - (self.game_screen.tile_size * 0.9 - self.rect.width),
-                                    self.rect.y - (self.game_screen.tile_size * 0.9 - self.rect.height),
+            self.rect = pygame.Rect(self.rect.x, self.rect.y,
                                     self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
-            self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
-            self.mask.fill()
+        self.rect = self.rect.move(prev_rect.width - self.rect.width, prev_rect.height - self.rect.height)
+        self.x += prev_rect.width - self.rect.width
+        self.y += prev_rect.height - self.rect.height
+
+        self.mask = pygame.mask.from_surface(pygame.Surface((self.rect.width, self.rect.height)))
+        self.mask.fill()
 
 
 class Particle(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, game_screen):
+    def __init__(self, image: pygame.Surface, x: int, y: int, game_screen):
         super().__init__(game_screen.particles_group)
         self.game_screen = game_screen
         self.image = image
@@ -114,12 +119,16 @@ class Particle(pygame.sprite.Sprite):
 
 
 class GameScreen:  # Screen for game at any level
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
 
     def load_level(self):  # Load selected level
-        with open(f'data/levels/{self.name}/level.json') as read_file:
-            self.level = json.load(read_file)
+        try:
+            with open(f'data/levels/{self.name}/level.json') as read_file:
+                self.level = json.load(read_file)
+        except FileNotFoundError:
+            print('Json file of level not found')
+            operations.terminate()
         self.map = pytmx.load_pygame(f'data/levels/{self.name}/level.tmx')
         self.height = self.map.height
         self.width = self.map.width
@@ -129,8 +138,12 @@ class GameScreen:  # Screen for game at any level
         self.death_tiles = [4, 9, 14, 11, 12, 13]
         self.end_tiles = [10, 15]
 
-        pygame.mixer.music.load(f'data/music/{self.level["music"]}')
-        pygame.mixer.music.play(-1)
+        try:
+            pygame.mixer.music.load(f'data/music/{self.level["music"]}')
+            pygame.mixer.music.play(-1)
+        except FileNotFoundError:
+            print('Music not found')
+            operations.terminate()
 
     def set_tiles_and_triggers(self):  # Set tiles and triggers at field
         for y in range(self.height):
@@ -165,37 +178,37 @@ class GameScreen:  # Screen for game at any level
                         trigger.trigger_id = trigger_id
                         self.triggers_group.add(trigger)
 
-    def get_tile_id(self, position, layer):  # Return id of tile at position
+    def get_tile_id(self, position: list, layer: int):  # Return id of tile at position
         return self.map.tiledgidmap[self.map.get_tile_gid(*position, layer)]
 
-    def check_lasers(self, hero):  # --> check collision with lasers
+    def check_lasers(self, hero: Hero):  # --> check collision with lasers
         for tile in self.death_tiles_group:
             if pygame.sprite.collide_mask(hero, tile):
                 self.win = False
                 self.running = False
                 break
 
-    def check_end(self, hero):
+    def check_end(self, hero: Hero):
         for tile in self.end_tiles_group:
             if pygame.sprite.collide_mask(hero, tile):
                 self.win = True
                 self.running = False
                 break
 
-    def check_obstacles(self, hero):
+    def check_obstacles(self, hero: Hero):
         for obstacle in self.obstacles_group:
             if pygame.sprite.collide_mask(hero, obstacle):
                 self.win = False
                 self.running = False
                 break
 
-    def check_hit(self, hero, *collide_groups):
+    def check_hit(self, hero: Hero, *collide_groups):
         prev_rect = hero.rect.copy()
         hero.rect.x += int(hero.dx)
         if operations.check_collide(hero, self.setup.screen, *collide_groups):
             changed_rect = hero.rect.copy()
             hit = True
-            for sign in [-1, 1, -2, 2]:
+            for sign in [0, -1, 1]:
                 hero.rect.y += int((hero.dx + self.tile_size * 0.2 * abs(sign)) * sign)
                 if not operations.check_collide(hero, None, *collide_groups):
                     hit = False
@@ -208,7 +221,7 @@ class GameScreen:  # Screen for game at any level
             self.win = False
             self.running = False
 
-    def check_stars(self, hero):
+    def check_stars(self, hero: Hero):
         for tile in self.stars_tiles_group:
             if pygame.sprite.collide_mask(hero, tile):
                 self.stars += 1
@@ -222,13 +235,17 @@ class GameScreen:  # Screen for game at any level
                 break
 
     def update_db(self):
-        with open(os.path.join('data', 'levels', self.name, 'level.json'), 'r') as read_file:
-            data = json.load(read_file)
-        data['completed'] = data['completed'] or self.win
-        if self.win:
-            data['stars'] = max(data['stars'], self.stars)
-        with open(os.path.join('data', 'levels', self.name, 'level.json'), 'w') as write_file:
-            json.dump(data, write_file)
+        try:
+            with open(os.path.join('data', 'levels', self.name, 'level.json'), 'r') as read_file:
+                data = json.load(read_file)
+            data['completed'] = data['completed'] or self.win
+            if self.win:
+                data['stars'] = max(data['stars'], self.stars)
+            with open(os.path.join('data', 'levels', self.name, 'level.json'), 'w') as write_file:
+                json.dump(data, write_file)
+        except FileNotFoundError:
+            print('Json file not found')
+            operations.terminate()
 
     def start(self, setup):
         self.setup = setup
@@ -268,23 +285,7 @@ class GameScreen:  # Screen for game at any level
         self.win = None
         self.stars = 0
         self.running = True
-        while True:
-            if not self.running:
-                pygame.mixer.music.pause()
-                self.update_db()
-                if self.win:
-                    start_dir_path = os.getcwd()
-                    os.chdir('../..')
-                    conn = sqlite3.connect("database.sqlite")
-                    cursor = conn.cursor()
-                    coins = cursor.execute("""SELECT Coins FROM User""").fetchone()
-                    coins_now = int(coins[0])
-                    coins_will = str(coins_now + 1)
-                    sql_link = f"""UPDATE User SET Coins={coins_will}"""
-                    cursor.execute(sql_link)
-                    conn.commit()
-                    os.chdir(start_dir_path)
-                return self.setup.FinishScreen(self.name, self.win, self.stars)
+        while self.running:
             if self.to_last_trigger_update <= 0:
                 self.check_triggers()
             for event in pygame.event.get():
@@ -299,8 +300,7 @@ class GameScreen:  # Screen for game at any level
                 self.particles_group.add(Particle(
                     pygame.transform.scale(operations.load_image('Smoke.png'),
                                            (self.tile_size * 0.2, self.tile_size * 0.2)),
-                    self.hero.rect.x + self.tile_size * 0.4, self.hero.rect.y + self.tile_size * 0.4,
-                    self
+                    self.hero.rect.x, self.hero.rect.y + self.tile_size * 0.4, self
                 ))
             self.hero.update()
             camera.update(self.hero, self)
@@ -328,5 +328,24 @@ class GameScreen:  # Screen for game at any level
 
             self.check_stars(self.hero)  # Check collision with non-final game tiles
 
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
+
+        # Finish game processing
+        pygame.mixer.music.pause()
+        self.update_db()
+        if self.win:
+            start_dir_path = os.getcwd()
+            os.chdir('../..')
+            conn = sqlite3.connect("database.sqlite")
+            cursor = conn.cursor()
+            coins = cursor.execute("""SELECT Coins FROM User""").fetchone()
+            coins_now = int(coins[0])
+            coins_will = str(coins_now + 1)
+            sql_link = f"""UPDATE User SET Coins={coins_will}"""
+            cursor.execute(sql_link)
+            conn.commit()
+            os.chdir(start_dir_path)
+        return self.setup.FinishScreen(self.name, self.win, self.stars)

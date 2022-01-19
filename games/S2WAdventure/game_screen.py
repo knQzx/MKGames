@@ -197,7 +197,8 @@ class GameScreen:
         background = operations.load_image(self.level['background'])
         self.running = True
         win_check = False
-        while True:
+        self.out = None
+        while self.out is None:
             # make +1 money if you win
             if float(self.hero.distance / self.tile_size / self.width * 100) >= 100 and not win_check:
                 start_dir_path = os.getcwd()
@@ -212,10 +213,6 @@ class GameScreen:
                 conn.commit()
                 os.chdir(start_dir_path)
                 win_check = True
-
-            if not self.running:
-                if self.out is not None:
-                    return self.out
 
             space_clicked = False
             for event in pygame.event.get():
@@ -279,8 +276,11 @@ class GameScreen:
                     self.hero.distance = self.tile_size * self.width
                     self.finish_game()
 
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(self.setup.FPS)
+        return self.out
 
     def load_level(self):
         with open(f'data/levels/{self.name}/level.json') as read_file:
