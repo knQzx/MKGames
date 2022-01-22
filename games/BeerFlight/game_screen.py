@@ -84,11 +84,12 @@ class Hero(pygame.sprite.Sprite):  # Sprite of main hero
         if self.sheet_state == 1:
             self.rect = pygame.Rect(self.rect.x, self.rect.y,
                                     self.image.get_bounding_rect().width, self.image.get_bounding_rect().height)
-
             self.image = self.image.subsurface(self.image.get_bounding_rect())
         if self.sheet_state == 0:
             self.rect = pygame.Rect(self.rect.x, self.rect.y,
                                     self.game_screen.tile_size * 0.9, self.game_screen.tile_size * 0.9)
+            if operations.check_collide(self, self.game_screen.setup.screen, self.game_screen.default_tiles_group):
+                self.rect = prev_rect.copy()
         self.rect = self.rect.move(prev_rect.width - self.rect.width, prev_rect.height - self.rect.height)
         self.x += prev_rect.width - self.rect.width
         self.y += prev_rect.height - self.rect.height
