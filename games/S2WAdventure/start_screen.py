@@ -13,14 +13,15 @@ class StartScreen:
             self.levels = json.load(read_file)
         self.add_levels()
 
-        while True:  # Working with UI
+        out = None
+        while out is None:  # Working with UI
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    setup.operations.terminate()
+                    return None
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     for level in self.levels_group:
                         if level.rect.collidepoint(*event.pos):
-                            return setup.GameScreen(level.name)
+                            out = setup.GameScreen(level.name)
                 if event.type == pygame.MOUSEWHEEL:
                     move = event.x + event.y
                     if move > 0:
@@ -41,8 +42,12 @@ class StartScreen:
             self.levels_group.draw(setup.screen)
             self.draw_title(self.setup.screen)
             self.draw_hint(self.setup.screen)
+
+            self.setup.set_fps()
+            setup.clock.tick()
+
             pygame.display.flip()
-            setup.clock.tick(setup.FPS)
+        return out
 
     def draw_hint(self, screen):
         text = ['Change world: "E"', 'Accelerate: "W"']
