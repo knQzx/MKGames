@@ -42,4 +42,14 @@ Our slogan is Enter another world.
 21) To finish what I didn't have enough time for
 22) Icing everything out of the git; testing
 23) Release in production
+# If you want to run the project at home:
+1. You need to write in the console:
+```
+pip3 install -r requirements.txt
+```
+2. Then you need to wait a little time, and then write to the console:
+```
+python3 main.py
+```
+3. Success! This project has started on your PC and you can play games.
 ---
